@@ -17,6 +17,8 @@ CREATE TABLE Departamento (
 	idDepartamento VARCHAR(10) NOT NULL,
 	CONSTRAINT fk_ciudad_departamento FOREIGN KEY (idDepartamento) REFERENCES DEPARTAMENTO(idDepartamento)
  );
+
+ );
  CREATE TABLE Distribuidor (
 	idDistribuidor VARCHAR(10) PRIMARY KEY,
 	nitDistribuidor VARCHAR(10) NOT NULL UNIQUE,
@@ -97,5 +99,16 @@ CREATE TABLE Envio (
     pagoEfectuado BOOLEAN NOT NULL DEFAULT FALSE,
     CONSTRAINT fk_envio_venta FOREIGN KEY (idVenta) REFERENCES Venta(idVenta),
     CONSTRAINT fk_envio_ciudad FOREIGN KEY (idCiudad) REFERENCES Ciudad(idCiudad),
-    CONSTRAINT chk_fecha_entrega CHECK (fechaEntrega >= CAST(fechaEnvio AS DATE))
+    CONSTRAINT fk_fecha_entrega CHECK (fechaEntrega >= CAST(fechaEnvio AS DATE))
+);
+CREATE TABLE Cargo (
+	idCargo VARCHAR(10) PRIMARY KEY,
+	nombreCargo VARCHAR(100) NOT NULL UNIQUE,
+	descripcion TEXT NULL,
+	nivel INTEGER NOT NULL,
+	salarioBase NUMERIC(12,2) NOT NULL,
+	area VARCHAR(100) NOT NULL,
+	activo BOOLEAN NOT NULL DEFAULT 'TRUE',
+	CHECK (nivel >= 1),
+	CHECK (SalarioBase > 0)
 );
