@@ -13,7 +13,7 @@ CREATE TABLE Departamento (
  CREATE TABLE Ciudad (
 	idCiudad VARCHAR(10) PRIMARY KEY,
 	nombre VARCHAR(50) NOT NULL,
-	codigoDANE: VARCHAR(5) NOT NULL,
+	codigoDANE VARCHAR(5) NOT NULL,
 	idDepartamento VARCHAR(10) NOT NULL,
 	CONSTRAINT fk_ciudad_departamento FOREIGN KEY (idDepartamento) REFERENCES DEPARTAMENTO(idDepartamento)
  );
