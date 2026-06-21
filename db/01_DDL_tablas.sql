@@ -1,21 +1,19 @@
 CREATE TABLE PAIS (
 	idPais VARCHAR(10) PRIMARY KEY,
 	nombre VARCHAR(50) NOT NULL UNIQUE,
-	codigoIso UNIQUE --Ej: COL
+	codigoIso VARCHAR(3) UNIQUE --Ej: COL
 );
 CREATE TABLE DEPARTAMENTO (
 	idDepartamento VARCHAR(10) PRIMARY KEY,
 	nombre VARCHAR(50) NOT NULL,
 	codigoDANE VARCHAR(5) NOT NULL,
 	idPais VARCHAR(10) NOT NULL,
-	CONSTRAINT fk_departamento_pais
-		FOREIGN KEY (idPais) REFERENCES PAIS(idPais)
+	CONSTRAINT fk_departamento_pais FOREIGN KEY (idPais) REFERENCES PAIS(idPais)
  );
  CREATE TABLE CIUDAD(
 	idCiudad VARCHAR(10) PRIMARY KEY,
 	nombre VARCHAR(50) NOT NULL,
 	codigoDANE: VARCHAR(5) NOT NULL,
 	idDepartamento VARCHAR(10) NOT NULL,
-	CONSTRAINT fk_ciudad_departamento
-		FOREIGN KEY (idDepartamento) REFERENCES DEPARTAMENTO(idDepartamento)
+	CONSTRAINT fk_ciudad_departamento FOREIGN KEY (idDepartamento) REFERENCES DEPARTAMENTO(idDepartamento)
  );
