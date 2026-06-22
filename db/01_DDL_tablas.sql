@@ -19,7 +19,7 @@ CREATE TABLE Departamento (
  );
  CREATE TABLE Distribuidor (
 	idDistribuidor VARCHAR(10) PRIMARY KEY,
-	nitDistribuidor VARCHAR(10) NOT NULL UNIQUE,
+	nitDistribuidor VARCHAR(20) NOT NULL UNIQUE,
 	razonSocial VARCHAR(150) NOT NULL,
 	telefono VARCHAR(15) NOT NULL UNIQUE,
 	correo VARCHAR(100) NOT NULL UNIQUE,
@@ -33,7 +33,7 @@ CREATE TABLE Departamento (
  CREATE TABLE PuntoDeVenta (
 	idPuntoVenta VARCHAR(10) PRIMARY KEY,
 	nombreRazonSocial VARCHAR(50) NOT NULL UNIQUE,
-	nit VARCHAR(30) NOT NULL,
+	nit VARCHAR(30) NOT NULL UNIQUE,
 	direccion VARCHAR(200) NOT NULL,
 	idCiudad VARCHAR(10) NOT NULL, --FK
 	telefono VARCHAR(15) NOT NULL,
@@ -97,5 +97,77 @@ CREATE TABLE Envio (
     pagoEfectuado BOOLEAN NOT NULL DEFAULT FALSE,
     CONSTRAINT fk_envio_venta FOREIGN KEY (idVenta) REFERENCES Venta(idVenta),
     CONSTRAINT fk_envio_ciudad FOREIGN KEY (idCiudad) REFERENCES Ciudad(idCiudad),
-    CONSTRAINT chk_fecha_entrega CHECK (fechaEntrega >= CAST(fechaEnvio AS DATE))
+    CONSTRAINT fk_fecha_entrega CHECK (fechaEntrega >= CAST(fechaEnvio AS DATE))
+);
+CREATE TABLE Cargo (
+	idCargo VARCHAR(10) PRIMARY KEY,
+	nombreCargo VARCHAR(100) NOT NULL UNIQUE,
+	descripcion TEXT NULL,
+	nivel INTEGER NOT NULL,
+	salarioBase NUMERIC(12,2) NOT NULL,
+	area VARCHAR(100) NOT NULL,
+	activo BOOLEAN NOT NULL DEFAULT TRUE,
+	CHECK (nivel >= 1),
+	CHECK (SalarioBase > 0)
+);
+CREATE TABLE Empleado(
+	idEmpleado VARCHAR(10) PRIMARY KEY,
+	tipoDocumento VARCHAR(3) NOT NULL,
+	numeroDocumento VARCHAR(20) NOT NULL UNIQUE,
+	nombres VARCHAR(100) NOT NULL,
+	apellidos VARCHAR(100) NOT NULL,
+	fechaNacimiento DATE NOT NULL,
+	direccion VARCHAR(200) NOT NULL,
+	telefono VARCHAR(15) NULL,
+	celular VARCHAR(15) NOT NULL,
+	correo VARCHAR(100) NOT NULL UNIQUE,
+	fechaIngreso DATE NOT NULL,
+	fechaRetiro DATE NULL,
+	idCargo VARCHAR(10) NOT NULL,
+	activo BOOLEAN NOT NULL DEFAULT TRUE,
+	CONSTRAINT fk_empleado_cargo FOREIGN KEY (idCargo) REFERENCES Cargo(idCargo),
+	CHECK(tipoDocumento IN('CC','CE','TI')),
+	CHECK (fechaRetiro IS NULL OR fechaRetiro >= fechaIngreso)
+);
+
+CREATE TABLE ClienteEmpresa (
+	idCliente VARCHAR(10) PRIMARY KEY,
+	tipoDocumento VARCHAR(3) NOT NULL,
+	numeroDocumento VARCHAR(20) NOT NULL UNIQUE,
+	nombreRazonSocial VARCHAR(150) NOT NULL,
+	nit VARCHAR(20) NOT NULL UNIQUE,
+	direccion VARCHAR(200) NOT NULL,
+	idCiudad VARCHAR(10) NOT NULL,
+	telefono VARCHAR(15) NULL,
+	celular VARCHAR(15) NOT NULL,
+	correo VARCHAR(100) NOT NULL UNIQUE,
+	tipoCliente VARCHAR(20) NOT NULL,
+	fechaRegistro TIMESTAMP NOT NULL DEFAULT NOW(),
+	activo BOOLEAN NOT NULL DEFAULT TRUE,
+	CONSTRAINT fk_clienteEmpresa_ciudad FOREIGN KEY (idCiudad) REFERENCES ciudad(idCiudad),
+	CHECK(tipoDocumento IN('CC','CE','TI')),
+	CHECK(tipoCliente IN('MAYORISTA','MINORISTA','DISTRIBUIDOR'))
+);
+CREATE TABLE Contrato (
+	idContrato VARCHAR(10) PRIMARY KEY,
+	numeroContrato VARCHAR(50) NOT NULL UNIQUE,
+	tipoContrato VARCHAR(30) NOT NULL,
+	fechaInicio DATE NOT NULL,
+	fechaFin DATE NULL,
+	valorContrato NUMERIC(14,2) NULL,
+	descripcionObjeto TEXT NULL,
+	modalidad TEXT NOT NULL,
+	estado VARCHAR(10) NOT NULL DEFAULT 'ACTIVO',
+	idEmpleado VARCHAR(10) NULL,
+	idDistribuidor VARCHAR(10) NULL,
+	idProveedor VARCHAR(10) NULL, --necesita de proveedor
+	idPuntoVenta VARCHAR(10) NULL,
+	idClienteEmpresa VARCHAR(10) NULL,
+	CONSTRAINT fk_contrato_empleado FOREIGN KEY (idEmpleado) REFERENCES Empleado(idEmpleado),
+	CONSTRAINT fk_contrato_distribuidor FOREIGN KEY (idDistribuidor) REFERENCES Distribuidor(idDistribuidor),
+	CONSTRAINT fk_contrato_puntoventa FOREIGN KEY (idPuntoVenta) REFERENCES PuntoDeVenta(idPuntoVenta),
+	CONSTRAINT fk_contrato_clienteempresa FOREIGN KEY (idClienteEmpresa) REFERENCES ClienteEmpresa(idCliente),
+	CHECK(tipoContrato IN('EMPLEADO','DISTRIB','PROVEEDOR','PTO_VENTA','CLIENTE_EMPRESA')),
+	CHECK (fechaFin IS NULL OR fechaFin > fechaInicio),
+	CHECK (estado IN('ACTIVO','TERMINADO','SUSPENDIDO'))
 );
