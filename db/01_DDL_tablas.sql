@@ -176,26 +176,26 @@ CREATE TABLE Proveedor (
     idProveedor VARCHAR(10)  PRIMARY KEY,
     nit VARCHAR(20)  NOT NULL UNIQUE,
     razonSocial VARCHAR(150) NOT NULL,
-    telefono VARCHAR(15),
-    celular VARCHAR(15),
-    contactoNombre  VARCHAR(100),
-    email VARCHAR(100) UNIQUE,
-    tipoProveedor VARCHAR(50),
-    condicionesPago INTEGER,
+    telefono VARCHAR(15) NULL,
+    celular VARCHAR(15) NULL,
+    contactoNombre  VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NULL,
+    tipoProveedor VARCHAR(50) NOT NULL,
+    condicionesPago INTEGER NULL,
     calificacion INTEGER      CHECK (calificacion BETWEEN 1 AND 5),
     activo BOOLEAN      NOT NULL DEFAULT TRUE,
     fechaRegistro TIMESTAMP    NOT NULL DEFAULT NOW(),
-    direccion VARCHAR(200),
-    idCiudad VARCHAR(10)  REFERENCES Ciudad(idCiudad)
+    direccion VARCHAR(200) NOT NULL,
+    idCiudad VARCHAR(10)  NOT NULL REFERENCES Ciudad(idCiudad)
 );
 
 CREATE TABLE Insumo (
     idInsumo VARCHAR(10)  PRIMARY KEY,
     codigoInsumo VARCHAR(50)  NOT NULL UNIQUE,
     nombre VARCHAR(150) NOT NULL,
-    descripcion TEXT,
+    descripcion TEXT NULL,
     unidadMedida VARCHAR(20)  NOT NULL,
-    tipoInsumo VARCHAR(50),
+    tipoInsumo VARCHAR(50) NULL,
     activo BOOLEAN      NOT NULL DEFAULT TRUE
 );
 
@@ -206,10 +206,10 @@ CREATE TABLE CompraInsumo (
     idProveedor VARCHAR(10)   NOT NULL REFERENCES Proveedor(idProveedor),
     subtotal NUMERIC(14,2) NOT NULL CHECK (subtotal >= 0),
     iva NUMERIC(14,2) NOT NULL CHECK (iva >= 0),
-    total NUMERIC(14,2) GENERATED ALWAYS AS (subtotal + iva) STORED,
+    total NUMERIC(14,2) NOT NULL GENERATED ALWAYS AS (subtotal + iva) STORED,
     estado VARCHAR(20)   NOT NULL DEFAULT 'Pendiente',
-    fechaRecepcion TIMESTAMP,
-    idEmpleadoRecibe VARCHAR(10)   REFERENCES Empleado(idEmpleado)
+    fechaRecepcion TIMESTAMP NOT NULL,
+    idEmpleadoRecibe VARCHAR(10)   NOT NULL REFERENCES Empleado(idEmpleado)
 );
 
 CREATE TABLE DetalleCompraInsumo (
@@ -218,7 +218,7 @@ CREATE TABLE DetalleCompraInsumo (
     idInsumo VARCHAR(10)   NOT NULL REFERENCES Insumo(idInsumo),
     cantidad NUMERIC(12,2) NOT NULL CHECK (cantidad > 0),
     precioUnitario  NUMERIC(12,2) NOT NULL CHECK (precioUnitario > 0),
-    subtotalLinea   NUMERIC(14,2) GENERATED ALWAYS AS (cantidad * precioUnitario) STORED
+    subtotalLinea   NUMERIC(14,2) NOT NULL GENERATED ALWAYS AS (cantidad * precioUnitario) STORED
 );
 CREATE TABLE InventarioInsumo (
     idInventarioInsumo VARCHAR(10)   PRIMARY KEY,
@@ -226,7 +226,7 @@ CREATE TABLE InventarioInsumo (
     cantidadDisponible NUMERIC(12,2) NOT NULL DEFAULT 0 CHECK (cantidadDisponible >= 0),
     stockMinimo NUMERIC(12,2) NOT NULL CHECK (stockMinimo >= 0),
     stockMaximo NUMERIC(12,2) NOT NULL,
-    ubicacionBodega VARCHAR(100),
+    ubicacionBodega VARCHAR(100) NOT NULL,
     fechaActualizacion TIMESTAMP     NOT NULL DEFAULT NOW(),
     CONSTRAINT chk_stock CHECK (stockMaximo > stockMinimo)
 );
