@@ -171,3 +171,50 @@ CREATE TABLE Contrato (
 	CHECK (fechaFin IS NULL OR fechaFin > fechaInicio),
 	CHECK (estado IN('ACTIVO','TERMINADO','SUSPENDIDO'))
 );
+--Tablas de productos
+CREATE TABLE CategoriaProducto(
+idCategoria VARCHAR(10) PRIMARY KEY,
+nombreCategoria VARCHAR(200) NOT NULL UNIQUE,
+descripcion VARCHAR(200) NULL
+);
+CREATE TABLE Producto(
+idProducto VARCHAR(10) PRIMARY KEY,
+codigoBarras VARCHAR(13) NOT NULL UNIQUE,
+nombre VARCHAR(150) NOT NULL,
+descripcion VARCHAR(200) NULL,
+presentacion VARCHAR(50) NOT NULL,
+gradoAlcoholico NUMERIC(4,2) NOT NULL,
+precioBase NUMERIC(12,2) NOT NULL,
+tarifaIva NUMERIC(4,2) NOT NULL,
+sysTrace VARCHAR(13) NOT NULL UNIQUE,
+fechaRegistro TIMESTAMP NOT NULL DEFAULT NOW(),
+idCategoria VARCHAR(10) NOT NULL,
+CONSTRAINT fk_producto_categoriaproducto FOREIGN KEY (idCategoria) REFERENCES CategoriaProducto(idCategoria),
+CHECK(precioBase>0)
+);
+CREATE TABLE LoteProduccion(
+idLote VARCHAR(10) PRIMARY KEY,
+fechaProduccion DATE NOT NULL,
+fechaVencimiento DATE NOT NULL,
+cantidadProducida NUMERIC(12,2) NOT NULL,
+idProducto VARCHAR(10) NOT NULL,
+idEmpleado VARCHAR(10) NOT NULL,
+estado VARCHAR(100) NOT NULL DEFAULT 'EN_PROCESO',
+observaciones VARCHAR(200) NULL,
+CONSTRAINT fk_loteproduccion_producto FOREIGN KEY (idProducto) REFERENCES 	Producto(idProducto),
+CONSTRAINT fk_loteproduccion_empleado FOREIGN KEY (idEmpleado) REFERENCES 	Empleado(idEmpleado),
+CHECK(fechaVencimiento>fechaProduccion),
+CHECK(cantidadProducida>0)
+);
+CREATE TABLE inventarioProducto(
+idInventarioProducto VARCHAR(10) PRIMARY KEY,
+IdProducto VARCHAR(10) NOT NULL,
+stockActual NUMERIC(12,2) NOT NULL,
+stockMaximo NUMERIC(12,2) NOT NULL DEFAULT '0',
+ubicacionBodega VARCHAR(100) NOT NULL,
+fechaActualizacion TIMESTAMP NOT NULL DEFAULT NOW(),
+CONSTRAINT fk_inventarioproducto_producto FOREIGN KEY (idProducto) REFERENCES Producto(idProducto),
+CHECK(stockActual>=0)
+);
+
+
