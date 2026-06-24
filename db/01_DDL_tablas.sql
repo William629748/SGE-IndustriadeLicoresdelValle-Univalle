@@ -1,22 +1,117 @@
 CREATE TABLE Pais (
 	idPais VARCHAR(10) PRIMARY KEY,
 	nombre VARCHAR(50) NOT NULL UNIQUE,
-	codigoIso VARCHAR(3) UNIQUE --Ej: COL
+	codigoIso VARCHAR(3) NOT NULL UNIQUE --Ej: COL
 );
 CREATE TABLE Departamento (
 	idDepartamento VARCHAR(10) PRIMARY KEY,
 	nombre VARCHAR(50) NOT NULL,
-	codigoDANE VARCHAR(5) NOT NULL,
+	codigoDANE VARCHAR(5) NOT NULL UNIQUE,
 	idPais VARCHAR(10) NOT NULL,
-	CONSTRAINT fk_departamento_pais FOREIGN KEY (idPais) REFERENCES PAIS(idPais)
+	CONSTRAINT fk_departamento_pais FOREIGN KEY (idPais) REFERENCES Pais(idPais)
  );
  CREATE TABLE Ciudad (
 	idCiudad VARCHAR(10) PRIMARY KEY,
 	nombre VARCHAR(50) NOT NULL,
-	codigoDANE VARCHAR(5) NOT NULL,
+	codigoDANE VARCHAR(5) NOT NULL UNIQUE,
 	idDepartamento VARCHAR(10) NOT NULL,
-	CONSTRAINT fk_ciudad_departamento FOREIGN KEY (idDepartamento) REFERENCES DEPARTAMENTO(idDepartamento)
+	CONSTRAINT fk_ciudad_departamento FOREIGN KEY (idDepartamento) REFERENCES Departamento(idDepartamento)
  );
+ CREATE TABLE Cargo (
+	idCargo VARCHAR(10) PRIMARY KEY,
+	nombreCargo VARCHAR(100) NOT NULL UNIQUE,
+	descripcion TEXT NULL,
+	nivel INTEGER NOT NULL,
+	salarioBase NUMERIC(12,2) NOT NULL,
+	area VARCHAR(100) NOT NULL,
+	activo BOOLEAN NOT NULL DEFAULT TRUE,
+	CHECK (nivel >= 1),
+	CHECK (SalarioBase > 0)
+);
+CREATE TABLE CategoriaProducto(
+	idCategoria VARCHAR(10) PRIMARY KEY,
+	nombreCategoria VARCHAR(200) NOT NULL UNIQUE,
+	descripcion VARCHAR(200) NULL
+);
+CREATE TABLE Insumo (
+    idInsumo VARCHAR(10)  PRIMARY KEY,
+    codigoInsumo VARCHAR(50)  NOT NULL UNIQUE,
+    nombre VARCHAR(150) NOT NULL,
+    descripcion TEXT NULL,
+    unidadMedida VARCHAR(20) NOT NULL,
+    tipoInsumo VARCHAR(50) NOT NULL,
+    activo BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+CREATE TABLE Empleado(
+	idEmpleado VARCHAR(10) PRIMARY KEY,
+	tipoDocumento VARCHAR(3) NOT NULL,
+	numeroDocumento VARCHAR(20) NOT NULL UNIQUE,
+	nombres VARCHAR(100) NOT NULL,
+	apellidos VARCHAR(100) NOT NULL,
+	fechaNacimiento DATE NOT NULL,
+	direccion VARCHAR(200) NOT NULL,
+	telefono VARCHAR(15) NULL,
+	celular VARCHAR(15) NOT NULL,
+	correo VARCHAR(100) NOT NULL UNIQUE,
+	fechaIngreso DATE NOT NULL,
+	fechaRetiro DATE NULL,
+	idCargo VARCHAR(10) NOT NULL,
+	activo BOOLEAN NOT NULL DEFAULT TRUE,
+	CONSTRAINT fk_empleado_cargo FOREIGN KEY (idCargo) REFERENCES Cargo(idCargo),
+	CHECK(tipoDocumento IN('CC','CE','TI')),
+	CHECK (fechaRetiro IS NULL OR fechaRetiro >= fechaIngreso)
+);
+CREATE TABLE Producto(
+	idProducto VARCHAR(10) PRIMARY KEY,
+	codigoBarras VARCHAR(13) NOT NULL UNIQUE,
+	nombre VARCHAR(150) NOT NULL,
+	descripcion VARCHAR(200) NULL,
+	presentacion VARCHAR(50) NOT NULL,
+	gradoAlcoholico NUMERIC(4,2) NOT NULL,
+	precioBase NUMERIC(12,2) NOT NULL,
+	tarifaIva NUMERIC(4,2) NOT NULL,
+	sysTrace VARCHAR(13) NOT NULL UNIQUE,
+	fechaRegistro TIMESTAMP NOT NULL DEFAULT NOW(),
+	idCategoria VARCHAR(10) NOT NULL,
+	CONSTRAINT fk_producto_categoriaproducto FOREIGN KEY (idCategoria) REFERENCES CategoriaProducto(idCategoria),
+	CHECK(precioBase>0)
+);
+CREATE TABLE Proveedor (
+    idProveedor VARCHAR(10)  PRIMARY KEY,
+    nit VARCHAR(20)  NOT NULL UNIQUE,
+    razonSocial VARCHAR(150) NOT NULL,
+    telefono VARCHAR(15) NULL,
+    celular VARCHAR(15) NOT NULL,
+    contactoNombre VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    tipoProveedor VARCHAR(50) NOT NULL,
+    condicionesPago INTEGER NOT NULL DEFAULT 30,
+    calificacion INTEGER CHECK (calificacion BETWEEN 1 AND 5),
+    activo BOOLEAN NOT NULL DEFAULT TRUE,
+    fechaRegistro TIMESTAMP  NOT NULL DEFAULT NOW(),
+    direccion VARCHAR(200) NOT NULL,
+    idCiudad VARCHAR(10)  NOT NULL REFERENCES Ciudad(idCiudad)
+);
+
+CREATE TABLE ClienteEmpresa (
+	idCliente VARCHAR(10) PRIMARY KEY,
+	tipoDocumento VARCHAR(3) NOT NULL,
+	numeroDocumento VARCHAR(20) NOT NULL UNIQUE,
+	nombreRazonSocial VARCHAR(150) NOT NULL,
+	nit VARCHAR(20) NOT NULL UNIQUE,
+	direccion VARCHAR(200) NOT NULL,
+	idCiudad VARCHAR(10) NOT NULL,
+	telefono VARCHAR(15) NULL,
+	celular VARCHAR(15) NOT NULL,
+	correo VARCHAR(100) NOT NULL UNIQUE,
+	tipoCliente VARCHAR(20) NOT NULL,
+	fechaRegistro TIMESTAMP NOT NULL DEFAULT NOW(),
+	activo BOOLEAN NOT NULL DEFAULT TRUE,
+	CONSTRAINT fk_clienteEmpresa_ciudad FOREIGN KEY (idCiudad) REFERENCES ciudad(idCiudad),
+	CHECK(tipoDocumento IN('CC','NIT','CE')),
+	CHECK(tipoCliente IN('MAYORISTA','MINORISTA','DISTRIBUIDOR'))
+);
  CREATE TABLE Distribuidor (
 	idDistribuidor VARCHAR(10) PRIMARY KEY,
 	nitDistribuidor VARCHAR(20) NOT NULL UNIQUE,
@@ -30,6 +125,68 @@ CREATE TABLE Departamento (
 	fechaRegistro TIMESTAMP NOT NULL DEFAULT NOW(),
 	CONSTRAINT fk_distribuidor_ciudad FOREIGN KEY (idCiudad) REFERENCES Ciudad(idCiudad)
  );
+ CREATE TABLE InventarioInsumo (
+    idInventarioInsumo VARCHAR(10) PRIMARY KEY,
+    idInsumo VARCHAR(10) NOT NULL UNIQUE REFERENCES Insumo(idInsumo),
+    cantidadDisponible NUMERIC(12,2) NOT NULL DEFAULT 0 CHECK (cantidadDisponible >= 0),
+    stockMinimo NUMERIC(12,2) NOT NULL CHECK (stockMinimo >= 0),
+    stockMaximo NUMERIC(12,2) NOT NULL,
+    ubicacionBodega VARCHAR(100) NOT NULL,
+    fechaActualizacion TIMESTAMP NOT NULL DEFAULT NOW(),
+    CONSTRAINT chk_stock CHECK (stockMaximo > stockMinimo)
+);
+CREATE TABLE CompraInsumo (
+    idCompra VARCHAR(10) PRIMARY KEY,
+    numeroOrden VARCHAR(50) NOT NULL UNIQUE,
+    fechaCompra TIMESTAMP NOT NULL,
+    idProveedor VARCHAR(10) NOT NULL REFERENCES Proveedor(idProveedor),
+    subtotal NUMERIC(14,2) NOT NULL CHECK (subtotal >= 0),
+    iva NUMERIC(14,2) NOT NULL CHECK (iva >= 0),
+    total NUMERIC(14,2) NOT NULL GENERATED ALWAYS AS (subtotal + iva) STORED,
+    estado VARCHAR(20)   NOT NULL DEFAULT 'Pendiente',
+    fechaRecepcion TIMESTAMP NULL,
+    idEmpleadoRecibe VARCHAR(10) NULL REFERENCES Empleado(idEmpleado)
+);
+CREATE TABLE DetalleCompraInsumo (
+    idDetalleCompra VARCHAR(10) PRIMARY KEY,
+    idCompra VARCHAR(10) NOT NULL REFERENCES CompraInsumo(idCompra),
+    idInsumo VARCHAR(10) NOT NULL REFERENCES Insumo(idInsumo),
+    cantidad NUMERIC(12,2) NOT NULL CHECK (cantidad >= 1),
+    precioUnitario NUMERIC(12,2) NOT NULL CHECK (precioUnitario > 0),
+    subtotalLinea NUMERIC(14,2) NOT NULL GENERATED ALWAYS AS (cantidad * precioUnitario) STORED
+);
+CREATE TABLE LoteProduccion(
+	idLote VARCHAR(10) PRIMARY KEY,
+	fechaProduccion DATE NOT NULL,
+	fechaVencimiento DATE NOT NULL,
+	cantidadProducida NUMERIC(12,2) NOT NULL,
+	idProducto VARCHAR(10) NOT NULL,
+	idEmpleado VARCHAR(10) NOT NULL,
+	estado VARCHAR(100) NOT NULL DEFAULT 'EN PROCESO',
+	observaciones VARCHAR(200) NULL,
+	CONSTRAINT fk_loteproduccion_producto FOREIGN KEY (idProducto) REFERENCES Producto(idProducto),
+	CONSTRAINT fk_loteproduccion_empleado FOREIGN KEY (idEmpleado) REFERENCES Empleado(idEmpleado),
+	CHECK(fechaVencimiento>fechaProduccion),
+	CHECK(cantidadProducida>0)
+);
+CREATE TABLE ConsumoInsumo (
+    idConsumo VARCHAR(10) PRIMARY KEY,
+    idLote VARCHAR(10) NOT NULL REFERENCES LoteProduccion(idLote),
+    idInsumo VARCHAR(10) NOT NULL REFERENCES Insumo(idInsumo),
+    cantidadConsumida NUMERIC(12,2) NOT NULL CHECK (cantidadConsumida > 0),
+    fechaConsumo TIMESTAMP NOT NULL,
+    idEmpleado VARCHAR(10) NOT NULL REFERENCES Empleado(idEmpleado)
+);
+CREATE TABLE inventarioProducto(
+	idInventarioProducto VARCHAR(10) PRIMARY KEY,
+	idProducto VARCHAR(10) NOT NULL UNIQUE,
+	stockActual NUMERIC(12,2) NOT NULL,
+	stockMaximo NUMERIC(12,2) NOT NULL DEFAULT '0',
+	ubicacionBodega VARCHAR(100) NOT NULL,
+	fechaActualizacion TIMESTAMP NOT NULL DEFAULT NOW(),
+	CONSTRAINT fk_inventarioproducto_producto FOREIGN KEY (idProducto) REFERENCES Producto(idProducto),
+	CHECK(stockActual>=0)
+);
  CREATE TABLE PuntoDeVenta (
 	idPuntoVenta VARCHAR(10) PRIMARY KEY,
 	nombreRazonSocial VARCHAR(50) NOT NULL UNIQUE,
@@ -60,16 +217,29 @@ CREATE TABLE Departamento (
 	idDistribuidor VARCHAR(10),
 	idEmpleado VARCHAR(10) NOT NULL, --Vendedor responsable
 	CONSTRAINT fk_venta_punto FOREIGN KEY (idPuntoVenta) REFERENCES PuntoDeVenta(idPuntoVenta),
-	CONSTRAINT fk_venta_distribuidor FOREIGN KEY (idDistribuidor) REFERENCES Distribuidor(idDistribuidor)
- );
+	CONSTRAINT fk_venta_distribuidor FOREIGN KEY (idDistribuidor) REFERENCES Distribuidor(idDistribuidor),
+	CONSTRAINT fk_venta_clienteempresa FOREIGN KEY (idCliente) REFERENCES ClienteEmpresa(idCliente),
+	CONSTRAINT fk_venta_empleado FOREIGN KEY (idEmpleado) REFERENCES Empleado(idEmpleado),
+	CONSTRAINT chk_venta_canal CHECK (
+    (idPuntoVenta IS NOT NULL)::INT +
+    (idDistribuidor IS NOT NULL)::INT >= 1 ),
+	CHECK(subTotal>=0),
+	CHECK(iva>=0),
+	CHECK(total>=0),
+	CHECK(total = subTotal + iva)
+);
  CREATE TABLE DetalleVenta (
     idDetalleVenta VARCHAR(10) PRIMARY KEY,
     cantidad INTEGER NOT NULL CHECK (cantidad >= 1),
-    precioUnitario NUMERIC(12,2) NOT NULL,
+    precioUnitario NUMERIC(12,2) NOT NULL ,
     subtotalProducto NUMERIC(12,2) NOT NULL,
     idVenta VARCHAR(10) NOT NULL,
     idProducto VARCHAR(10) NOT NULL, -- Referencia a Producto
-    CONSTRAINT fk_detalle_venta FOREIGN KEY (idVenta) REFERENCES Venta(idVenta)
+    CONSTRAINT fk_detalle_venta FOREIGN KEY (idVenta) REFERENCES Venta(idVenta),
+	CONSTRAINT fk_detalle_producto FOREIGN KEY (idProducto) REFERENCES Producto(idProducto),
+	CHECK (subtotalProducto > 0),
+	CHECK (subtotalProducto = cantidad*precioUnitario),
+	CHECK (precioUnitario > 0)
 );
 CREATE TABLE Factura (
     idFactura VARCHAR(10) PRIMARY KEY,
@@ -99,55 +269,6 @@ CREATE TABLE Envio (
     CONSTRAINT fk_envio_ciudad FOREIGN KEY (idCiudad) REFERENCES Ciudad(idCiudad),
     CONSTRAINT fk_fecha_entrega CHECK (fechaEntrega >= CAST(fechaEnvio AS DATE))
 );
-CREATE TABLE Cargo (
-	idCargo VARCHAR(10) PRIMARY KEY,
-	nombreCargo VARCHAR(100) NOT NULL UNIQUE,
-	descripcion TEXT NULL,
-	nivel INTEGER NOT NULL,
-	salarioBase NUMERIC(12,2) NOT NULL,
-	area VARCHAR(100) NOT NULL,
-	activo BOOLEAN NOT NULL DEFAULT TRUE,
-	CHECK (nivel >= 1),
-	CHECK (SalarioBase > 0)
-);
-CREATE TABLE Empleado(
-	idEmpleado VARCHAR(10) PRIMARY KEY,
-	tipoDocumento VARCHAR(3) NOT NULL,
-	numeroDocumento VARCHAR(20) NOT NULL UNIQUE,
-	nombres VARCHAR(100) NOT NULL,
-	apellidos VARCHAR(100) NOT NULL,
-	fechaNacimiento DATE NOT NULL,
-	direccion VARCHAR(200) NOT NULL,
-	telefono VARCHAR(15) NULL,
-	celular VARCHAR(15) NOT NULL,
-	correo VARCHAR(100) NOT NULL UNIQUE,
-	fechaIngreso DATE NOT NULL,
-	fechaRetiro DATE NULL,
-	idCargo VARCHAR(10) NOT NULL,
-	activo BOOLEAN NOT NULL DEFAULT TRUE,
-	CONSTRAINT fk_empleado_cargo FOREIGN KEY (idCargo) REFERENCES Cargo(idCargo),
-	CHECK(tipoDocumento IN('CC','CE','TI')),
-	CHECK (fechaRetiro IS NULL OR fechaRetiro >= fechaIngreso)
-);
-
-CREATE TABLE ClienteEmpresa (
-	idCliente VARCHAR(10) PRIMARY KEY,
-	tipoDocumento VARCHAR(3) NOT NULL,
-	numeroDocumento VARCHAR(20) NOT NULL UNIQUE,
-	nombreRazonSocial VARCHAR(150) NOT NULL,
-	nit VARCHAR(20) NOT NULL UNIQUE,
-	direccion VARCHAR(200) NOT NULL,
-	idCiudad VARCHAR(10) NOT NULL,
-	telefono VARCHAR(15) NULL,
-	celular VARCHAR(15) NOT NULL,
-	correo VARCHAR(100) NOT NULL UNIQUE,
-	tipoCliente VARCHAR(20) NOT NULL,
-	fechaRegistro TIMESTAMP NOT NULL DEFAULT NOW(),
-	activo BOOLEAN NOT NULL DEFAULT TRUE,
-	CONSTRAINT fk_clienteEmpresa_ciudad FOREIGN KEY (idCiudad) REFERENCES ciudad(idCiudad),
-	CHECK(tipoDocumento IN('CC','CE','TI')),
-	CHECK(tipoCliente IN('MAYORISTA','MINORISTA','DISTRIBUIDOR'))
-);
 CREATE TABLE Contrato (
 	idContrato VARCHAR(10) PRIMARY KEY,
 	numeroContrato VARCHAR(50) NOT NULL UNIQUE,
@@ -167,7 +288,15 @@ CREATE TABLE Contrato (
 	CONSTRAINT fk_contrato_distribuidor FOREIGN KEY (idDistribuidor) REFERENCES Distribuidor(idDistribuidor),
 	CONSTRAINT fk_contrato_puntoventa FOREIGN KEY (idPuntoVenta) REFERENCES PuntoDeVenta(idPuntoVenta),
 	CONSTRAINT fk_contrato_clienteempresa FOREIGN KEY (idClienteEmpresa) REFERENCES ClienteEmpresa(idCliente),
-	CHECK(tipoContrato IN('EMPLEADO','DISTRIB','PROVEEDOR','PTO_VENTA','CLIENTE_EMPRESA')),
+	CONSTRAINT fk_contrato_proveedor FOREIGN KEY (idProveedor) REFERENCES Proveedor(idProveedor),
+	CHECK (tipoContrato IN('EMPLEADO','DISTRIB','PROVEEDOR','PTO_VENTA','CLIENTE_EMPRESA')),
 	CHECK (fechaFin IS NULL OR fechaFin > fechaInicio),
-	CHECK (estado IN('ACTIVO','TERMINADO','SUSPENDIDO'))
+	CHECK (estado IN('ACTIVO','TERMINADO','SUSPENDIDO')),
+	CHECK (
+    (idEmpleado IS NOT NULL)::INT +
+    (idDistribuidor IS NOT NULL)::INT +
+    (idProveedor IS NOT NULL)::INT +
+    (idPuntoVenta IS NOT NULL)::INT +
+    (idClienteEmpresa IS NOT NULL)::INT = 1
+	)
 );
