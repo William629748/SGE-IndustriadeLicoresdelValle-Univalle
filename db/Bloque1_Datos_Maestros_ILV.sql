@@ -52,7 +52,7 @@ INSERT INTO Ciudad (idCiudad, nombre, codigoDANE, idDepartamento) VALUES
 ('CIU002', 'Buenaventura',   '76109', 'DEP001'),
 ('CIU003', 'Medellín',       '05001', 'DEP002'),
 ('CIU004', 'Bello',          '05088', 'DEP002'),
-('CIU005', 'Bogotá',         '25754', 'DEP003'),
+('CIU005', 'Bogotá',         '11001', 'DEP003'),
 ('CIU006', 'Soacha',         '25754', 'DEP003'),
 ('CIU007', 'Barranquilla',   '08001', 'DEP004'),
 ('CIU008', 'Soledad',        '08634', 'DEP004'),
