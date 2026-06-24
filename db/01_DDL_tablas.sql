@@ -30,6 +30,71 @@ CREATE TABLE Departamento (
 	fechaRegistro TIMESTAMP NOT NULL DEFAULT NOW(),
 	CONSTRAINT fk_distribuidor_ciudad FOREIGN KEY (idCiudad) REFERENCES Ciudad(idCiudad)
  );
+<<<<<<< Updated upstream
+=======
+ CREATE TABLE InventarioInsumo (
+    idInventarioInsumo VARCHAR(10) PRIMARY KEY,
+    idInsumo VARCHAR(10) NOT NULL UNIQUE REFERENCES Insumo(idInsumo),
+    cantidadDisponible NUMERIC(12,2) NOT NULL DEFAULT 0 CHECK (cantidadDisponible >= 0),
+    stockMinimo NUMERIC(12,2) NOT NULL CHECK (stockMinimo >= 0),
+    stockMaximo NUMERIC(12,2) NOT NULL,
+    ubicacionBodega VARCHAR(100) NOT NULL,
+    fechaActualizacion TIMESTAMP NOT NULL DEFAULT NOW(),
+    CONSTRAINT chk_stock CHECK (stockMaximo > stockMinimo)
+);
+CREATE TABLE CompraInsumo (
+    idCompra VARCHAR(10) PRIMARY KEY,
+    numeroOrden VARCHAR(50) NOT NULL UNIQUE,
+    fechaCompra TIMESTAMP NOT NULL,
+    idProveedor VARCHAR(10) NOT NULL REFERENCES Proveedor(idProveedor),
+    subtotal NUMERIC(14,2) NOT NULL CHECK (subtotal >= 0),
+    iva NUMERIC(14,2) NOT NULL CHECK (iva >= 0),
+    total NUMERIC(14,2) NOT NULL GENERATED ALWAYS AS (subtotal + iva) STORED,
+    estado VARCHAR(20)   NOT NULL DEFAULT 'Pendiente',
+    fechaRecepcion TIMESTAMP NULL,
+    idEmpleadoRecibe VARCHAR(10) NULL REFERENCES Empleado(idEmpleado)
+);
+CREATE TABLE DetalleCompraInsumo (
+    idDetalleCompra VARCHAR(10) PRIMARY KEY,
+    idCompra VARCHAR(10) NOT NULL REFERENCES CompraInsumo(idCompra),
+    idInsumo VARCHAR(10) NOT NULL REFERENCES Insumo(idInsumo),
+    cantidad NUMERIC(12,2) NOT NULL CHECK (cantidad >= 1),
+    precioUnitario NUMERIC(12,2) NOT NULL CHECK (precioUnitario > 0),F
+    subtotalLinea NUMERIC(14,2) NOT NULL GENERATED ALWAYS AS (cantidad * precioUnitario) STORED
+);
+CREATE TABLE LoteProduccion(
+	idLote VARCHAR(10) PRIMARY KEY,
+	fechaProduccion DATE NOT NULL,
+	fechaVencimiento DATE NOT NULL,
+	cantidadProducida NUMERIC(12,2) NOT NULL,
+	idProducto VARCHAR(10) NOT NULL,
+	idEmpleado VARCHAR(10) NOT NULL,
+	estado VARCHAR(100) NOT NULL DEFAULT 'EN PROCESO',
+	observaciones VARCHAR(200) NULL,
+	CONSTRAINT fk_loteproduccion_producto FOREIGN KEY (idProducto) REFERENCES Producto(idProducto),
+	CONSTRAINT fk_loteproduccion_empleado FOREIGN KEY (idEmpleado) REFERENCES Empleado(idEmpleado),
+	CHECK(fechaVencimiento>fechaProduccion),
+	CHECK(cantidadProducida>0)
+);
+CREATE TABLE ConsumoInsumo (
+    idConsumo VARCHAR(10) PRIMARY KEY,
+    idLote VARCHAR(10) NOT NULL REFERENCES LoteProduccion(idLote),
+    idInsumo VARCHAR(10) NOT NULL REFERENCES Insumo(idInsumo),
+    cantidadConsumida NUMERIC(12,2) NOT NULL CHECK (cantidadConsumida > 0),
+    fechaConsumo TIMESTAMP NOT NULL,
+    idEmpleado VARCHAR(10) NOT NULL REFERENCES Empleado(idEmpleado)
+);
+CREATE TABLE inventarioProducto(
+	idInventarioProducto VARCHAR(10) PRIMARY KEY,
+	idProducto VARCHAR(10) NOT NULL UNIQUE,
+	stockActual NUMERIC(12,2) NOT NULL,
+	stockMaximo NUMERIC(12,2) NOT NULL DEFAULT '0',
+	ubicacionBodega VARCHAR(100) NOT NULL,
+	fechaActualizacion TIMESTAMP NOT NULL DEFAULT NOW(),
+	CONSTRAINT fk_inventarioproducto_producto FOREIGN KEY (idProducto) REFERENCES Producto(idProducto),
+	CHECK(stockActual>=0)
+);
+>>>>>>> Stashed changes
  CREATE TABLE PuntoDeVenta (
 	idPuntoVenta VARCHAR(10) PRIMARY KEY,
 	nombreRazonSocial VARCHAR(50) NOT NULL UNIQUE,
