@@ -94,4 +94,3 @@ INNER JOIN InventarioProducto
     ON Producto.idProducto = InventarioProducto.idProducto
 WHERE InventarioProducto.stockActual > 0
 ORDER BY InventarioProducto.stockActual DESC;
->>>>>>> Stashed changes
