@@ -59,4 +59,39 @@ SELECT
 FROM Insumo
 INNER JOIN InventarioInsumo ON Insumo.idInsumo=InventarioInsumo.idInsumo
 Where InventarioInsumo.cantidadDisponible < InventarioInsumo.stockMinimo
+<<<<<<< Updated upstream
 ORDER BY InventarioInsumo.cantidadDisponible ASC;
+=======
+ORDER BY InventarioInsumo.cantidadDisponible ASC;
+--Consulta 6
+SELECT
+    ClienteEmpresa.nombreRazonSocial,
+    COUNT(Venta.idVenta) AS totalVentas,
+    SUM(Venta.total) AS valorTotalComprado
+FROM ClienteEmpresa
+INNER JOIN Venta
+    ON ClienteEmpresa.idCliente = Venta.idCliente
+GROUP BY ClienteEmpresa.nombreRazonSocial
+ORDER BY valorTotalComprado DESC;
+--Consulta 7
+SELECT
+    Producto.nombre,
+    COUNT(LoteProduccion.idLote) AS totalLotes,
+    SUM(LoteProduccion.cantidadProducida) AS cantidadTotalProducida
+FROM Producto
+INNER JOIN LoteProduccion
+    ON Producto.idProducto = LoteProduccion.idProducto
+GROUP BY Producto.nombre
+ORDER BY cantidadTotalProducida DESC;
+--Consulta 8
+SELECT
+    Producto.nombre,
+    InventarioProducto.stockActual,
+    InventarioProducto.stockMaximo,
+    InventarioProducto.ubicacionBodega
+FROM Producto
+INNER JOIN InventarioProducto
+    ON Producto.idProducto = InventarioProducto.idProducto
+WHERE InventarioProducto.stockActual > 0
+ORDER BY InventarioProducto.stockActual DESC;
+>>>>>>> Stashed changes
