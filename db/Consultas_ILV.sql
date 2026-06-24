@@ -28,7 +28,7 @@ HAVING COUNT(*) > 2;
 SELECT
 	Proveedor.razonSocial,
 	Proveedor.nit,
-	COUNT(CompraInsumo.idCompra) AS totalOrdenes
+	COUNT(CompraInsumo.idCompra) AS totalOrdenes,
 	SUM(CompraInsumo.total) AS totalComprado
 FROM Proveedor
 INNER JOIN CompraInsumo ON Proveedor.idProveedor = CompraInsumo.idProveedor
