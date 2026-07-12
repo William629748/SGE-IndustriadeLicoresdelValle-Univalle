@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block titulo %}{{ 'Editar' if proveedor else 'Nuevo' }} Proveedor - ILV{% endblock %}
+{% block contenido %}
+<h1>{{ 'Editar' if proveedor else 'Nuevo' }} Proveedor</h1>
+
+<form class="formulario" method="POST">
+    {% if not proveedor %}
+    <label>NIT</label>
+    <input type="text" name="nit" required>
+
+    <label>Razón Social</label>
+    <input type="text" name="razonSocial" required>
+    {% endif %}
+
+    <label>Dirección</label>
+    <input type="text" name="direccion" value="{{ proveedor.direccion if proveedor else '' }}" required>
+
+    <label>Ciudad</label>
+    <select name="idCiudad" required>
+        {% for ciudad in ciudades %}
+        <option value="{{ ciudad.idciudad }}"
+            {% if proveedor and proveedor.idciudad == ciudad.idciudad %}selected{% endif %}>
+            {{ ciudad.nombre }}
+        </option>
+        {% endfor %}
+    </select>
+
+    <label>Teléfono</label>
+    <input type="text" name="telefono" value="{{ proveedor.telefono if proveedor else '' }}">
+
+    <label>Celular</label>
+    <input type="text" name="celular" value="{{ proveedor.celular if proveedor else '' }}" required>
+
+    <label>Contacto comercial</label>
+    <input type="text" name="contactoNombre" value="{{ proveedor.contactonombre if proveedor else '' }}" required>
+
+    <label>Email</label>
+    <input type="email" name="email" value="{{ proveedor.email if proveedor else '' }}" required>
+
+    <label>Tipo de proveedor</label>
+    <select name="tipoProveedor" required>
+        {% for opcion in ['MATERIA_PRIMA', 'ENVASES', 'ETIQUETAS', 'SERVICIOS'] %}
+        <option value="{{ opcion }}" {% if proveedor and proveedor.tipoproveedor == opcion %}selected{% endif %}>{{ opcion }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Condiciones de pago (días)</label>
+    <input type="number" name="condicionesPago" min="1" value="{{ proveedor.condicionespago if proveedor else 30 }}" required>
+
+    <label>Tiempo de entrega promedio (días)</label>
+    <input type="number" name="tiempoEntregaPromedio" min="1" value="{{ proveedor.tiempoentregapromedio if proveedor else '' }}" required>
+
+    <label>Calificación (1 a 5)</label>
+    <input type="number" name="calificacion" min="1" max="5" value="{{ proveedor.calificacion if proveedor else '' }}" required>
+
+    <label>Representante legal</label>
+    <input type="text" name="representanteLegal" value="{{ proveedor.representantelegal if proveedor else '' }}" required>
+
+    <label>Tipo de régimen tributario</label>
+    <select name="tipoRegimen" required>
+        <option value="RESPONSABLE_IVA" {% if proveedor and proveedor.tiporegimen == 'RESPONSABLE_IVA' %}selected{% endif %}>Responsable de IVA</option>
+        <option value="NO_RESPONSABLE" {% if proveedor and proveedor.tiporegimen == 'NO_RESPONSABLE' %}selected{% endif %}>No responsable</option>
+    </select>
+
+    <label>Banco (certificación bancaria)</label>
+    <input type="text" name="bancoNombre" value="{{ proveedor.banconombre if proveedor else '' }}">
+
+    <label>Tipo de cuenta</label>
+    <select name="tipoCuenta">
+        <option value="">-- Seleccione --</option>
+        <option value="AHORROS" {% if proveedor and proveedor.tipocuenta == 'AHORROS' %}selected{% endif %}>Ahorros</option>
+        <option value="CORRIENTE" {% if proveedor and proveedor.tipocuenta == 'CORRIENTE' %}selected{% endif %}>Corriente</option>
+    </select>
+
+    <label>Número de cuenta</label>
+    <input type="text" name="numeroCuenta" value="{{ proveedor.numerocuenta if proveedor else '' }}">
+
+    <label>Contacto de cartera/pagos</label>
+    <input type="text" name="contactoCartera" value="{{ proveedor.contactocartera if proveedor else '' }}">
+
+    <label>Contacto logístico</label>
+    <input type="text" name="contactoLogistico" value="{{ proveedor.contactologistico if proveedor else '' }}">
+
+    <label style="display:flex; align-items:center; gap:8px;">
+        <input type="checkbox" name="habeasData" style="width:auto;"
+            {% if proveedor and proveedor.habeasdata %}checked{% endif %}>
+        Autoriza tratamiento de datos (Habeas Data - Ley 1581/2012)
+    </label>
+
+    <div class="acciones">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a href="{{ url_for('proveedores.listar') }}" class="btn btn-editar">Cancelar</a>
+    </div>
+</form>
+{% endblock %}

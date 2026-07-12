@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block titulo %}{{ 'Editar' if item else 'Registrar' }} Inventario de Producto - ILV{% endblock %}
+{% block contenido %}
+<h1>{{ 'Editar' if item else 'Registrar' }} Inventario de Producto</h1>
+
+<form class="formulario" method="POST">
+    {% if item %}
+    <label>Producto</label>
+    <input type="text" value="{{ item.productonombre }} ({{ item.presentacion }})" disabled>
+    {% else %}
+    <label>Producto</label>
+    <select name="idProducto" required>
+        {% for p in productos %}
+        <option value="{{ p.idproducto }}">{{ p.nombre }}</option>
+        {% endfor %}
+    </select>
+    {% endif %}
+
+    <label>Stock actual</label>
+    <input type="number" step="0.01" min="0" name="stockActual"
+           value="{{ item.stockactual if item else 0 }}" required>
+
+    <label>Stock mínimo</label>
+    <input type="number" step="0.01" min="0" name="stockMinimo"
+           value="{{ item.stockminimo if item else '' }}" required>
+
+    <label>Stock máximo</label>
+    <input type="number" step="0.01" min="0" name="stockMaximo"
+           value="{{ item.stockmaximo if item else '' }}" required>
+
+    <label>Demanda diaria</label>
+    <input type="number" step="0.01" min="0.01" name="demandaDiaria"
+           value="{{ item.demandadiaria if item else '' }}" required>
+    <small>Cantidad que se vende en promedio por día. Se usa para calcular los Días de Stock (no se almacena).</small>
+
+    <label>Ubicación en bodega</label>
+    <input type="text" name="ubicacionBodega" placeholder="Ej: Bodega Producto Terminado - Cali"
+           value="{{ item.ubicacionbodega if item else '' }}" required>
+
+    <div class="acciones">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a href="{{ url_for('inventario_producto.listar') }}" class="btn btn-editar">Cancelar</a>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block titulo %}Nueva Orden de Compra - ILV{% endblock %}
+{% block contenido %}
+<h1>Nueva Orden de Compra</h1>
+
+<form class="formulario" method="POST">
+    <label>Proveedor</label>
+    <select name="idProveedor" required>
+        {% for p in proveedores %}
+        <option value="{{ p.idproveedor }}">{{ p.razonsocial }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Lugar de entrega</label>
+    <input type="text" name="lugarEntrega" placeholder="Ej: Bodega de Insumos Agrícolas - Palmira" required>
+
+    <div class="acciones">
+        <button type="submit" class="btn btn-primary">Crear orden y agregar insumos</button>
+        <a href="{{ url_for('compras.listar') }}" class="btn btn-editar">Cancelar</a>
+    </div>
+</form>
+{% endblock %}

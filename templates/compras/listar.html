@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block titulo %}Órdenes de Compra - ILV{% endblock %}
+{% block contenido %}
+<h1>Órdenes de Compra</h1>
+<a href="{{ url_for('compras.crear') }}" class="btn btn-primary">+ Nueva orden de compra</a>
+
+<table style="margin-top: 16px;">
+    <thead>
+        <tr>
+            <th>N° Orden</th>
+            <th>Proveedor</th>
+            <th>Fecha</th>
+            <th>Lugar entrega</th>
+            <th>Subtotal</th>
+            <th>IVA</th>
+            <th>Total</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for c in compras %}
+        <tr>
+            <td>{{ c.numeroorden }}</td>
+            <td>{{ c.proveedornombre }}</td>
+            <td>{{ c.fechacompra }}</td>
+            <td>{{ c.lugarentrega }}</td>
+            <td>{{ c.subtotal }}</td>
+            <td>{{ c.iva }}</td>
+            <td>{{ c.total }}</td>
+            <td>
+                {% if c.estado == 'Pendiente' %}
+                    <span class="badge badge-alerta">PENDIENTE</span>
+                {% else %}
+                    <span class="badge badge-activo">RECIBIDA</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if c.estado == 'Pendiente' %}
+                <a href="{{ url_for('compras.detalle', id_compra=c.idcompra) }}" class="btn btn-editar">Ver / Insumos</a>
+                <form method="POST" action="{{ url_for('compras.recibir', id_compra=c.idcompra) }}"
+                      onsubmit="return confirm('¿Marcar como Recibida? Se sumará automáticamente al inventario de insumos.');"
+                      style="display:inline;">
+                    <button type="submit" class="btn btn-primary">Recibir</button>
+                </form>
+                {% else %}
+                <span style="color:#999;">Bloqueada</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="9">No hay órdenes de compra registradas.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

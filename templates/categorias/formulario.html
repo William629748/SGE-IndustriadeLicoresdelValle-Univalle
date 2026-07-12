@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block titulo %}{{ 'Editar' if categoria else 'Nueva' }} Categoría - ILV{% endblock %}
+{% block contenido %}
+<h1>{{ 'Editar' if categoria else 'Nueva' }} Categoría</h1>
+
+<form class="formulario" method="POST">
+    <label>Nombre de la categoría</label>
+    <input type="text" name="nombreCategoria" value="{{ categoria.nombrecategoria if categoria else '' }}" required>
+
+    <label>Descripción</label>
+    <textarea name="descripcion" rows="3">{{ categoria.descripcion if categoria else '' }}</textarea>
+
+    <div class="acciones">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a href="{{ url_for('categorias.listar') }}" class="btn btn-editar">Cancelar</a>
+    </div>
+</form>
+{% endblock %}

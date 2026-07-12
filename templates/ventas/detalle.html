@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block titulo %}Venta {{ venta.idventa }} - ILV{% endblock %}
+{% block contenido %}
+<h1>Venta {{ venta.idventa }}</h1>
+<p>
+    <strong>Cliente:</strong> {{ venta.clientenombre }} &nbsp;|&nbsp;
+    <strong>Método de pago:</strong> {{ venta.metodopago }} &nbsp;|&nbsp;
+    <strong>Estado:</strong> {{ venta.estadoventa }}
+</p>
+
+<table style="margin-top: 16px;">
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio unitario</th>
+            <th>Subtotal línea</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for l in lineas %}
+        <tr>
+            <td>{{ l.productonombre }} ({{ l.presentacion }})</td>
+            <td>{{ l.cantidad }}</td>
+            <td>{{ l.preciounitario }}</td>
+            <td>{{ l.subtotalproducto }}</td>
+            <td>
+                <form method="POST" action="{{ url_for('ventas.eliminar_detalle', id_detalle=l.iddetalleventa) }}"
+                      onsubmit="return confirm('¿Eliminar esta línea?');" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="5">Aún no se han agregado productos a esta venta.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p style="margin-top: 12px;">
+    <strong>Subtotal:</strong> {{ venta.subtotal }} &nbsp;|&nbsp;
+    <strong>IVA:</strong> {{ venta.iva }} &nbsp;|&nbsp;
+    <strong>Total:</strong> {{ venta.total }}
+</p>
+
+<h2 style="margin-top: 24px;">Agregar producto a la venta</h2>
+<form class="formulario" method="POST">
+    <label>Producto</label>
+    <select name="idProducto" required>
+        {% for p in productos %}
+        <option value="{{ p.idproducto }}">
+            {{ p.nombre }} ({{ p.presentacion }}) - ${{ p.preciobase }} - Stock: {{ p.stockactual }}
+        </option>
+        {% endfor %}
+    </select>
+
+    <label>Cantidad</label>
+    <input type="number" step="1" min="1" name="cantidad" required>
+
+    <div class="acciones">
+        <button type="submit" class="btn btn-primary">Agregar</button>
+        <a href="{{ url_for('ventas.listar') }}" class="btn btn-editar">Volver a Ventas</a>
+    </div>
+</form>
+{% endblock %}

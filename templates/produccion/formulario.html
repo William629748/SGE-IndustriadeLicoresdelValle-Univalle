@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block titulo %}{{ 'Editar' if lote else 'Registrar' }} Lote de Producción - ILV{% endblock %}
+{% block contenido %}
+<h1>{{ 'Editar' if lote else 'Registrar' }} Lote de Producción</h1>
+
+<form class="formulario" method="POST">
+    <label>Producto</label>
+    <select name="idProducto" required>
+        {% for p in productos %}
+        <option value="{{ p.idproducto }}" {% if lote and lote.idproducto == p.idproducto %}selected{% endif %}>{{ p.nombre }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Empleado responsable</label>
+    <select name="idEmpleado" required>
+        {% for e in empleados %}
+        <option value="{{ e.idempleado }}" {% if lote and lote.idempleado == e.idempleado %}selected{% endif %}>{{ e.nombres }} {{ e.apellidos }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Fecha de producción</label>
+    <input type="date" name="fechaProduccion"
+           value="{{ lote.fechaproduccion if lote else '' }}" required>
+
+    <label>Fecha de vencimiento</label>
+    <input type="date" name="fechaVencimiento"
+           value="{{ lote.fechavencimiento if lote else '' }}" required>
+
+    <label>Cantidad producida</label>
+    <input type="number" step="0.01" min="0.01" name="cantidadProducida"
+           value="{{ lote.cantidadproducida if lote else '' }}" required>
+
+    <label>Observaciones</label>
+    <input type="text" name="observaciones" placeholder="Opcional"
+           value="{{ lote.observaciones if lote else '' }}">
+
+    {% if lote %}
+    <p><small>Estado actual: <strong>{{ lote.estado }}</strong> (solo editable mientras esté EN_PROCESO)</small></p>
+    {% endif %}
+
+    <div class="acciones">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a href="{{ url_for('produccion.listar') }}" class="btn btn-editar">Cancelar</a>
+    </div>
+</form>
+{% endblock %}

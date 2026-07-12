@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block titulo %}{{ 'Editar' if insumo else 'Nuevo' }} Insumo - ILV{% endblock %}
+{% block contenido %}
+<h1>{{ 'Editar' if insumo else 'Nuevo' }} Insumo</h1>
+
+<form class="formulario" method="POST">
+    {% if not insumo %}
+    <label>Código de insumo</label>
+    <input type="text" name="codigoInsumo" required>
+    {% endif %}
+
+    <label>Nombre</label>
+    <input type="text" name="nombre" value="{{ insumo.nombre if insumo else '' }}" required>
+
+    <label>Descripción</label>
+    <textarea name="descripcion" rows="3">{{ insumo.descripcion if insumo else '' }}</textarea>
+
+    <label>Unidad de medida</label>
+    <input type="text" name="unidadMedida" value="{{ insumo.unidadmedida if insumo else '' }}" placeholder="Ej: Litros, Kg, Unidades" required>
+
+    <label>Tipo de insumo</label>
+    <select name="tipoInsumo" required>
+        {% for opcion in ['MATERIA_PRIMA', 'ENVASE', 'ETIQUETA', 'EMPAQUE'] %}
+        <option value="{{ opcion }}" {% if insumo and insumo.tipoinsumo == opcion %}selected{% endif %}>{{ opcion }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Proveedor asociado</label>
+    <select name="idProveedor" required>
+        {% for prov in proveedores %}
+        <option value="{{ prov.idproveedor }}"
+            {% if insumo and insumo.idproveedor == prov.idproveedor %}selected{% endif %}>
+            {{ prov.razonsocial }}
+        </option>
+        {% endfor %}
+    </select>
+
+    <div class="acciones">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a href="{{ url_for('insumos.listar') }}" class="btn btn-editar">Cancelar</a>
+    </div>
+</form>
+{% endblock %}

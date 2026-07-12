@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}ILV - Sistema de Gestión{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+</head>
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <h2>ILV</h2>
+            <a href="{{ url_for('inicio') }}">Inicio</a>
+            <a href="{{ url_for('clientes.listar') }}">Clientes</a>
+            <a href="{{ url_for('proveedores.listar') }}">Proveedores</a>
+            <a href="{{ url_for('insumos.listar') }}">Insumos</a>
+            <a href="{{ url_for('inventario.listar') }}">Inventario</a>
+            <a href="{{ url_for('categorias.listar') }}">Categorías</a>
+            <a href="{{ url_for('productos.listar') }}">Productos</a>
+            <a href="{{ url_for('produccion.listar') }}">Producción</a>
+            <a href="{{ url_for('inventario_producto.listar') }}">Inv. Productos</a>
+            <a href="{{ url_for('compras.listar') }}">Compras</a>
+            <a href="{{ url_for('ventas.listar') }}">Ventas</a>
+            <a href="{{ url_for('facturas.listar') }}">Facturas</a>
+        </nav>
+        <main class="contenido">
+            {% with mensajes = get_flashed_messages() %}
+                {% if mensajes %}
+                    <div class="flash">{{ mensajes[0] }}</div>
+                {% endif %}
+            {% endwith %}
+            {% block contenido %}{% endblock %}
+        </main>
+    </div>
+</body>
+</html>

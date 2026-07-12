@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block titulo %}Facturas - ILV{% endblock %}
+{% block contenido %}
+<h1>Facturas</h1>
+<p style="color:#777; margin-bottom:16px;">
+    Las facturas se generan automáticamente al completar una venta y no pueden editarse ni eliminarse.
+</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>N° Factura</th>
+            <th>Fecha</th>
+            <th>Cliente</th>
+            <th>Subtotal</th>
+            <th>IVA</th>
+            <th>Total</th>
+            <th>Estado</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for f in facturas %}
+        <tr>
+            <td>{{ f.numerofactura }}</td>
+            <td>{{ f.fechafactura }}</td>
+            <td>{{ f.clientenombre }}</td>
+            <td>${{ "%.2f"|format(f.subtotal) }}</td>
+            <td>${{ "%.2f"|format(f.iva) }}</td>
+            <td>${{ "%.2f"|format(f.total) }}</td>
+            <td><span class="badge badge-activo">{{ f.estadofactura }}</span></td>
+            <td><a href="{{ url_for('facturas.ver', id_factura=f.idfactura) }}" class="btn btn-editar">Ver</a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="8">No hay facturas generadas todavía.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

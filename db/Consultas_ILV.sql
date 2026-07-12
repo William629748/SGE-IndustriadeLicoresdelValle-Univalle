@@ -148,3 +148,76 @@ INNER JOIN ClienteEmpresa ce ON v.idCliente = ce.idCliente
 INNER JOIN Envio e ON v.idVenta = e.idVenta
 INNER JOIN Ciudad c ON e.idCiudad = c.idCiudad
 ORDER BY e.fechaEnvio DESC;
+-- ============================================================
+-- CONSULTAS BÁSICAS (11 a 20) — aspectos simples del negocio,
+-- sin JOIN complejo ni GROUP BY, según lo exige el PDF para la
+-- Entrega Final (10 básicas + 10 complejas = 20 en total).
+-- ============================================================
+
+--Consulta 11
+-- Listado de todos los clientes activos, ordenados alfabéticamente.
+SELECT idCliente, nombreRazonSocial, nit, tipoCliente
+FROM ClienteEmpresa
+WHERE activo = TRUE
+ORDER BY nombreRazonSocial;
+
+--Consulta 12
+-- Catálogo completo de productos con su precio base y tarifa de IVA.
+SELECT idProducto, nombre, presentacion, precioBase, tarifaIva
+FROM Producto
+ORDER BY nombre;
+
+--Consulta 13
+-- Proveedores activos con calificación de 4 o más (buen desempeño histórico).
+SELECT idProveedor, razonSocial, tipoProveedor, calificacion
+FROM Proveedor
+WHERE activo = TRUE AND calificacion >= 4
+ORDER BY calificacion DESC;
+
+--Consulta 14
+-- Órdenes de compra que siguen en estado Pendiente (aún no recibidas).
+SELECT idCompra, numeroOrden, fechaCompra, total, lugarEntrega
+FROM CompraInsumo
+WHERE estado = 'Pendiente'
+ORDER BY fechaCompra;
+
+--Consulta 15
+-- Insumos cuya cantidad disponible está por debajo del stock mínimo (alerta de reorden).
+SELECT idInsumo, cantidadDisponible, stockMinimo, ubicacionBodega
+FROM InventarioInsumo
+WHERE cantidadDisponible < stockMinimo;
+
+--Consulta 16
+-- Empleados activos contratados en lo que va del año actual.
+SELECT idEmpleado, nombres, apellidos, fechaIngreso
+FROM Empleado
+WHERE activo = TRUE AND fechaIngreso >= DATE_TRUNC('year', CURRENT_DATE)
+ORDER BY fechaIngreso DESC;
+
+--Consulta 17
+-- Facturas emitidas con un total superior a $500.000.
+SELECT numeroFactura, fechaFactura, total, estadoFactura
+FROM Factura
+WHERE total > 500000
+ORDER BY total DESC;
+
+--Consulta 18
+-- Lotes de producción próximos a vencer (en los siguientes 30 días).
+SELECT idLote, fechaProduccion, fechaVencimiento, cantidadProducida, estado
+FROM LoteProduccion
+WHERE fechaVencimiento BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '30 days'
+ORDER BY fechaVencimiento;
+
+--Consulta 19
+-- Envíos que todavía no han sido pagados por el cliente/distribuidor.
+SELECT idEnvio, guiaTransporte, empresaTransportadora, estadoEnvio, fechaEntrega
+FROM Envio
+WHERE pagoEfectuado = FALSE
+ORDER BY fechaEntrega;
+
+--Consulta 20
+-- Productos con grado alcohólico superior a 35° (línea de licores fuertes).
+SELECT idProducto, nombre, presentacion, gradoAlcoholico
+FROM Producto
+WHERE gradoAlcoholico > 35
+ORDER BY gradoAlcoholico DESC;

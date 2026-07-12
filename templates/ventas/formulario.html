@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block titulo %}Nueva Venta - ILV{% endblock %}
+{% block contenido %}
+<h1>Nueva Venta</h1>
+
+<form class="formulario" method="POST">
+    <label>Cliente</label>
+    <select name="idCliente" required>
+        {% for c in clientes %}
+        <option value="{{ c.idcliente }}">{{ c.nombrerazonsocial }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Canal de venta</label>
+    <select name="canal" required>
+        <optgroup label="Punto de Venta">
+            {% for p in puntos_venta %}
+            <option value="PDV:{{ p.idpuntoventa }}">{{ p.nombrerazonsocial }}</option>
+            {% endfor %}
+        </optgroup>
+        <optgroup label="Distribuidor">
+            {% for d in distribuidores %}
+            <option value="DIST:{{ d.iddistribuidor }}">{{ d.razonsocial }}</option>
+            {% endfor %}
+        </optgroup>
+    </select>
+
+    <label>Vendedor</label>
+    <select name="idEmpleado" required>
+        {% for e in empleados %}
+        <option value="{{ e.idempleado }}">{{ e.nombres }} {{ e.apellidos }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Método de pago</label>
+    <select name="metodoPago" required>
+        <option value="EFECTIVO">Efectivo</option>
+        <option value="TRANSFERENCIA">Transferencia</option>
+        <option value="CREDITO">Crédito</option>
+    </select>
+
+    <div class="acciones">
+        <button type="submit" class="btn btn-primary">Crear venta y agregar productos</button>
+        <a href="{{ url_for('ventas.listar') }}" class="btn btn-editar">Cancelar</a>
+    </div>
+</form>
+{% endblock %}

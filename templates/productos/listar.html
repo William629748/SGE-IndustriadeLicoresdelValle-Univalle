@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block titulo %}Productos - ILV{% endblock %}
+{% block contenido %}
+<h1>Productos</h1>
+<a href="{{ url_for('productos.crear') }}" class="btn btn-primary">+ Nuevo Producto</a>
+
+<table style="margin-top: 16px;">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Código Barras</th>
+            <th>Nombre</th>
+            <th>Presentación</th>
+            <th>Grado Alc.</th>
+            <th>Precio Base</th>
+            <th>IVA %</th>
+            <th>Categoría</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for p in productos %}
+        <tr>
+            <td>{{ p.idproducto }}</td>
+            <td>{{ p.codigobarras }}</td>
+            <td>{{ p.nombre }}</td>
+            <td>{{ p.presentacion }}</td>
+            <td>{{ p.gradoalcoholico }}%</td>
+            <td>${{ p.preciobase }}</td>
+            <td>{{ p.tarifaiva }}%</td>
+            <td>{{ p.nombrecategoria }}</td>
+            <td>
+                {% if p.activo %}
+                    <span class="badge badge-activo">Activo</span>
+                {% else %}
+                    <span class="badge badge-inactivo">Inactivo</span>
+                {% endif %}
+            </td>
+            <td>
+                <a href="{{ url_for('productos.editar', id_producto=p.idproducto) }}" class="btn btn-editar">Editar</a>
+                {% if p.activo %}
+                <form action="{{ url_for('productos.eliminar', id_producto=p.idproducto) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('¿Desactivar este producto?');">Desactivar</button>
+                </form>
+                {% else %}
+                <form action="{{ url_for('productos.activar', id_producto=p.idproducto) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-primary" onclick="return confirm('¿Activar este producto?');">Activar</button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

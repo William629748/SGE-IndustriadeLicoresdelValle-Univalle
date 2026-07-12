@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block titulo %}Inventario de Productos - ILV{% endblock %}
+{% block contenido %}
+<h1>Inventario de Productos</h1>
+<a href="{{ url_for('inventario_producto.crear') }}" class="btn btn-primary">+ Registrar inventario</a>
+
+<table style="margin-top: 16px;">
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Presentación</th>
+            <th>Stock actual</th>
+            <th>Demanda diaria</th>
+            <th>Días de stock</th>
+            <th>Bodega</th>
+            <th>Estado</th>
+            <th>Acción recomendada</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for inv in inventario %}
+        <tr>
+            <td>{{ inv.productonombre }}</td>
+            <td>{{ inv.presentacion }}</td>
+            <td>{{ inv.stockactual }}</td>
+            <td>{{ inv.demandadiaria }}</td>
+            <td>{{ inv.diasStock }}</td>
+            <td>{{ inv.ubicacionbodega }}</td>
+            <td>
+                {% if inv.estado == 'AGOTADO' %}
+                    <span class="badge badge-agotado">AGOTADO</span>
+                {% elif inv.estado == 'CRÍTICO' %}
+                    <span class="badge badge-critico">CRÍTICO</span>
+                {% elif inv.estado == 'ALERTA' %}
+                    <span class="badge badge-alerta">ALERTA</span>
+                {% else %}
+                    <span class="badge badge-activo">SEGURO</span>
+                {% endif %}
+            </td>
+            <td>{{ inv.accion }}</td>
+            <td>
+                <a href="{{ url_for('inventario_producto.editar', id_inventario=inv.idinventarioproducto) }}" class="btn btn-editar">Editar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

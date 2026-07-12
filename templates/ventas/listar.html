@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block titulo %}Ventas - ILV{% endblock %}
+{% block contenido %}
+<h1>Ventas</h1>
+<a href="{{ url_for('ventas.crear') }}" class="btn btn-primary">+ Nueva venta</a>
+
+<table style="margin-top: 16px;">
+    <thead>
+        <tr>
+            <th>ID Venta</th>
+            <th>Cliente</th>
+            <th>Canal</th>
+            <th>Fecha</th>
+            <th>Subtotal</th>
+            <th>IVA</th>
+            <th>Total</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for v in ventas %}
+        <tr>
+            <td>{{ v.idventa }}</td>
+            <td>{{ v.clientenombre }}</td>
+            <td>
+                {% if v.puntoventanombre %}{{ v.puntoventanombre }}
+                {% else %}{{ v.distribuidornombre }} (Distribuidor){% endif %}
+            </td>
+            <td>{{ v.fechaventa }}</td>
+            <td>{{ v.subtotal }}</td>
+            <td>{{ v.iva }}</td>
+            <td>{{ v.total }}</td>
+            <td>
+                {% if v.estadoventa == 'PENDIENTE' %}
+                    <span class="badge badge-alerta">PENDIENTE</span>
+                {% elif v.estadoventa == 'COMPLETADA' %}
+                    <span class="badge badge-activo">COMPLETADA</span>
+                {% else %}
+                    <span class="badge badge-critico">CANCELADA</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if v.estadoventa == 'PENDIENTE' %}
+                <a href="{{ url_for('ventas.detalle', id_venta=v.idventa) }}" class="btn btn-editar">Ver / Productos</a>
+                <form method="POST" action="{{ url_for('ventas.completar', id_venta=v.idventa) }}"
+                      onsubmit="return confirm('¿Completar esta venta? Se descontará del inventario de productos{% if v.distribuidornombre %} y se generará el envío{% endif %}.');"
+                      style="display:inline;">
+                    {% if v.distribuidornombre %}
+                    <select name="empresaTransportadora" required>
+                        <option value="">-- Transportadora --</option>
+                        <option value="SERVIENTREGA">Servientrega</option>
+                        <option value="COORDINADORA">Coordinadora</option>
+                        <option value="DEPRISA">Deprisa</option>
+                        <option value="TCC">TCC</option>
+                    </select>
+                    {% endif %}
+                    <button type="submit" class="btn btn-primary">Completar</button>
+                </form>
+                {% elif v.idfactura %}
+                <a href="{{ url_for('facturas.ver', id_factura=v.idfactura) }}" class="btn btn-editar">Ver factura</a>
+                {% else %}
+                <span style="color:#999;">Bloqueada</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="9">No hay ventas registradas.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

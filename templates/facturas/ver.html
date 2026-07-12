@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block titulo %}Factura {{ factura.numerofactura }} - ILV{% endblock %}
+{% block contenido %}
+<h1>Factura Electrónica de Venta</h1>
+
+<div class="formulario" style="max-width: 700px; margin-bottom: 20px;">
+    <p><strong>N° Factura:</strong> {{ factura.numerofactura }}</p>
+    <p><strong>Fecha:</strong> {{ factura.fechafactura }}</p>
+    <p><strong>Estado:</strong> <span class="badge badge-activo">{{ factura.estadofactura }}</span></p>
+    <hr style="margin: 12px 0;">
+    <p><strong>Vendedor:</strong> Industria de Licores del Valle S.A.S — NIT 890.399.021-4</p>
+    <p><strong>Dirección:</strong> Calle 15 #24-50, Cali, Valle del Cauca</p>
+    <hr style="margin: 12px 0;">
+    <p><strong>Adquirente:</strong> {{ factura.clientenombre }}</p>
+    <p><strong>{{ factura.clientetipodocumento }}:</strong> {{ factura.clientenumerodocumento }}</p>
+    {% if factura.cufe %}
+    <p><strong>CUFE:</strong> {{ factura.cufe }}</p>
+    {% endif %}
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Presentación</th>
+            <th>Cantidad</th>
+            <th>Valor unitario</th>
+            <th>Subtotal</th>
+            <th>Tarifa IVA</th>
+            <th>IVA</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for l in lineas %}
+        <tr>
+            <td>{{ l.productonombre }}</td>
+            <td>{{ l.presentacion }}</td>
+            <td>{{ l.cantidad }}</td>
+            <td>${{ "%.2f"|format(l.preciounitario) }}</td>
+            <td>${{ "%.2f"|format(l.subtotalproducto) }}</td>
+            <td>{{ l.tarifaiva }}%</td>
+            <td>${{ "%.2f"|format(l.ivalinea) }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="formulario" style="max-width: 400px; margin-top: 20px;">
+    <p><strong>Subtotal:</strong> ${{ "%.2f"|format(factura.subtotal) }}</p>
+    <p><strong>IVA:</strong> ${{ "%.2f"|format(factura.iva) }}</p>
+    <p style="font-size: 1.2em;"><strong>Total a pagar:</strong> ${{ "%.2f"|format(factura.total) }}</p>
+</div>
+
+<a href="{{ url_for('facturas.listar') }}" class="btn btn-editar" style="margin-top:16px;">Volver</a>
+{% endblock %}

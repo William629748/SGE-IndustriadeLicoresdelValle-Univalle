@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block titulo %}Consumo de Insumos - Lote {{ lote.idlote }} - ILV{% endblock %}
+{% block contenido %}
+<h1>Consumo de Insumos — Lote {{ lote.idlote }}</h1>
+<p><small>Estado del lote: <strong>{{ lote.estado }}</strong></small></p>
+
+<table style="margin-top: 16px;">
+    <thead>
+        <tr>
+            <th>Insumo</th>
+            <th>Cantidad consumida</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for c in consumos %}
+        <tr>
+            <td>{{ c.insumonombre }} ({{ c.unidadmedida }})</td>
+            <td>{{ c.cantidadconsumida }}</td>
+            <td>{{ c.fechaconsumo }}</td>
+            <td>
+                <form method="POST" action="{{ url_for('produccion.eliminar_consumo', id_consumo=c.idconsumo) }}"
+                      onsubmit="return confirm('¿Eliminar esta línea de consumo?');" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="4">Aún no se ha registrado consumo de insumos para este lote.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h2 style="margin-top: 24px;">Agregar línea de consumo</h2>
+<form class="formulario" method="POST">
+    <label>Insumo</label>
+    <select name="idInsumo" required>
+        {% for i in insumos %}
+        <option value="{{ i.idinsumo }}">{{ i.nombre }} ({{ i.unidadmedida }})</option>
+        {% endfor %}
+    </select>
+
+    <label>Cantidad consumida</label>
+    <input type="number" step="0.01" min="0.01" name="cantidadConsumida" required>
+
+    <div class="acciones">
+        <button type="submit" class="btn btn-primary">Agregar</button>
+        <a href="{{ url_for('produccion.listar') }}" class="btn btn-editar">Volver a Producción</a>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block titulo %}Clientes - ILV{% endblock %}
+{% block contenido %}
+<h1>Clientes</h1>
+<a href="{{ url_for('clientes.crear') }}" class="btn btn-primary">+ Nuevo Cliente</a>
+
+<table style="margin-top: 16px;">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Razón Social</th>
+            <th>NIT</th>
+            <th>Ciudad</th>
+            <th>Teléfono</th>
+            <th>Correo</th>
+            <th>Tipo</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for c in clientes %}
+        <tr>
+            <td>{{ c.idcliente }}</td>
+            <td>{{ c.nombrerazonsocial }}</td>
+            <td>{{ c.nit }}</td>
+            <td>{{ c.ciudad }}</td>
+            <td>{{ c.telefono or '-' }}</td>
+            <td>{{ c.correo }}</td>
+            <td>{{ c.tipocliente }}</td>
+            <td>
+                {% if c.activo %}
+                    <span class="badge badge-activo">Activo</span>
+                {% else %}
+                    <span class="badge badge-inactivo">Inactivo</span>
+                {% endif %}
+            </td>
+            <td>
+                <a href="{{ url_for('clientes.editar', id_cliente=c.idcliente) }}" class="btn btn-editar">Editar</a>
+                {% if c.activo %}
+                <form action="{{ url_for('clientes.eliminar', id_cliente=c.idcliente) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('¿Desactivar este cliente?');">Desactivar</button>
+                </form>
+                {% else %}
+                <form action="{{ url_for('clientes.activar', id_cliente=c.idcliente) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-primary" onclick="return confirm('¿Activar este cliente?');">Activar</button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

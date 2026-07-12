@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block titulo %}{{ 'Editar' if cliente else 'Nuevo' }} Cliente - ILV{% endblock %}
+{% block contenido %}
+<h1>{{ 'Editar' if cliente else 'Nuevo' }} Cliente</h1>
+
+<form class="formulario" method="POST">
+    {% if not cliente %}
+    <label>Tipo de documento</label>
+    <select name="tipoDocumento" required>
+        <option value="NIT">NIT</option>
+        <option value="CC">CC</option>
+        <option value="CE">CE</option>
+    </select>
+
+    <label>Número de documento</label>
+    <input type="text" name="numeroDocumento" required>
+
+    <label>Nombre / Razón Social</label>
+    <input type="text" name="nombreRazonSocial" required>
+
+    <label>NIT</label>
+    <input type="text" name="nit" required>
+    {% endif %}
+
+    <label>Dirección</label>
+    <input type="text" name="direccion" value="{{ cliente.direccion if cliente else '' }}" required>
+
+    <label>Ciudad</label>
+    <select name="idCiudad" required>
+        {% for ciudad in ciudades %}
+        <option value="{{ ciudad.idciudad }}"
+            {% if cliente and cliente.idciudad == ciudad.idciudad %}selected{% endif %}>
+            {{ ciudad.nombre }}
+        </option>
+        {% endfor %}
+    </select>
+
+    <label>Teléfono</label>
+    <input type="text" name="telefono" value="{{ cliente.telefono if cliente else '' }}">
+
+    <label>Celular</label>
+    <input type="text" name="celular" value="{{ cliente.celular if cliente else '' }}" required>
+
+    <label>Correo</label>
+    <input type="email" name="correo" value="{{ cliente.correo if cliente else '' }}" required>
+
+    <label>Tipo de cliente</label>
+    <select name="tipoCliente" required>
+        {% for opcion in ['MAYORISTA', 'MINORISTA', 'DISTRIBUIDOR'] %}
+        <option value="{{ opcion }}" {% if cliente and cliente.tipocliente == opcion %}selected{% endif %}>{{ opcion }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Representante legal</label>
+    <input type="text" name="representanteLegal" value="{{ cliente.representantelegal if cliente else '' }}" required>
+
+    <label>Tipo de régimen tributario</label>
+    <select name="tipoRegimen" required>
+        <option value="RESPONSABLE_IVA" {% if cliente and cliente.tiporegimen == 'RESPONSABLE_IVA' %}selected{% endif %}>Responsable de IVA</option>
+        <option value="NO_RESPONSABLE" {% if cliente and cliente.tiporegimen == 'NO_RESPONSABLE' %}selected{% endif %}>No responsable</option>
+    </select>
+
+    <label style="display:flex; align-items:center; gap:8px;">
+        <input type="checkbox" name="habeasData" style="width:auto;"
+            {% if cliente and cliente.habeasdata %}checked{% endif %}>
+        Autoriza tratamiento de datos (Habeas Data - Ley 1581/2012)
+    </label>
+
+    <div class="acciones">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a href="{{ url_for('clientes.listar') }}" class="btn btn-editar">Cancelar</a>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block titulo %}Proveedores - ILV{% endblock %}
+{% block contenido %}
+<h1>Proveedores</h1>
+<a href="{{ url_for('proveedores.crear') }}" class="btn btn-primary">+ Nuevo Proveedor</a>
+
+<table style="margin-top: 16px;">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Razón Social</th>
+            <th>NIT</th>
+            <th>Ciudad</th>
+            <th>Tipo</th>
+            <th>Entrega (días)</th>
+            <th>Calificación</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for p in proveedores %}
+        <tr>
+            <td>{{ p.idproveedor }}</td>
+            <td>{{ p.razonsocial }}</td>
+            <td>{{ p.nit }}</td>
+            <td>{{ p.ciudad }}</td>
+            <td>{{ p.tipoproveedor }}</td>
+            <td>{{ p.tiempoentregapromedio }}</td>
+            <td>{{ p.calificacion or '-' }}/5</td>
+            <td>
+                {% if p.activo %}
+                    <span class="badge badge-activo">Activo</span>
+                {% else %}
+                    <span class="badge badge-inactivo">Inactivo</span>
+                {% endif %}
+            </td>
+            <td>
+                <a href="{{ url_for('proveedores.editar', id_proveedor=p.idproveedor) }}" class="btn btn-editar">Editar</a>
+                {% if p.activo %}
+                <form action="{{ url_for('proveedores.eliminar', id_proveedor=p.idproveedor) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('¿Desactivar este proveedor?');">Desactivar</button>
+                </form>
+                {% else %}
+                <form action="{{ url_for('proveedores.activar', id_proveedor=p.idproveedor) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-primary" onclick="return confirm('¿Activar este proveedor?');">Activar</button>
+                </form>
+                {% endif %}
+            </td>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

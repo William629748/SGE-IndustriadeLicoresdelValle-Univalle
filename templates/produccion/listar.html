@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block titulo %}Lotes de Producción - ILV{% endblock %}
+{% block contenido %}
+<h1>Lotes de Producción</h1>
+<a href="{{ url_for('produccion.crear') }}" class="btn btn-primary">+ Registrar lote</a>
+
+<table style="margin-top: 16px;">
+    <thead>
+        <tr>
+            <th>Lote</th>
+            <th>Producto</th>
+            <th>Responsable</th>
+            <th>Fecha producción</th>
+            <th>Fecha vencimiento</th>
+            <th>Cantidad producida</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for l in lotes %}
+        <tr>
+            <td>{{ l.idlote }}</td>
+            <td>{{ l.productonombre }}</td>
+            <td>{{ l.empleadonombres }} {{ l.empleadoapellidos }}</td>
+            <td>{{ l.fechaproduccion }}</td>
+            <td>{{ l.fechavencimiento }}</td>
+            <td>{{ l.cantidadproducida }}</td>
+            <td>
+                {% if l.estado == 'EN_PROCESO' %}
+                    <span class="badge badge-alerta">EN PROCESO</span>
+                {% elif l.estado == 'FINALIZADO' %}
+                    <span class="badge badge-activo">FINALIZADO</span>
+                {% else %}
+                    <span class="badge badge-critico">RECHAZADO</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if l.estado == 'EN_PROCESO' %}
+                <a href="{{ url_for('produccion.editar', id_lote=l.idlote) }}" class="btn btn-editar">Editar</a>
+                <a href="{{ url_for('produccion.consumo', id_lote=l.idlote) }}" class="btn btn-primary">Consumo</a>
+                <form method="POST" action="{{ url_for('produccion.finalizar', id_lote=l.idlote) }}"
+                      onsubmit="return confirm('¿Finalizar este lote? Se sumará al stock de producto y se descontarán los insumos consumidos.');"
+                      style="display:inline;">
+                    <button type="submit" class="btn btn-primary">Finalizar</button>
+                </form>
+                <form method="POST" action="{{ url_for('produccion.rechazar', id_lote=l.idlote) }}"
+                      onsubmit="return confirm('¿Rechazar este lote? NO se sumará stock de producto, pero sí se descontarán los insumos consumidos.');"
+                      style="display:inline;">
+                    <button type="submit" class="btn btn-danger">Rechazar</button>
+                </form>
+                {% else %}
+                <span style="color:#999;">Bloqueado</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

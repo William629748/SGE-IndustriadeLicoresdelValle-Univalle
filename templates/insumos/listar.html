@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block titulo %}Insumos - ILV{% endblock %}
+{% block contenido %}
+<h1>Insumos</h1>
+<a href="{{ url_for('insumos.crear') }}" class="btn btn-primary">+ Nuevo Insumo</a>
+
+<table style="margin-top: 16px;">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Código</th>
+            <th>Nombre</th>
+            <th>Unidad</th>
+            <th>Tipo</th>
+            <th>Proveedor</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for i in insumos %}
+        <tr>
+            <td>{{ i.idinsumo }}</td>
+            <td>{{ i.codigoinsumo }}</td>
+            <td>{{ i.nombre }}</td>
+            <td>{{ i.unidadmedida }}</td>
+            <td>{{ i.tipoinsumo }}</td>
+            <td>{{ i.proveedor }}</td>
+            <td>
+                {% if i.activo %}
+                    <span class="badge badge-activo">Activo</span>
+                {% else %}
+                    <span class="badge badge-inactivo">Inactivo</span>
+                {% endif %}
+            </td>
+            <td>
+                <a href="{{ url_for('insumos.editar', id_insumo=i.idinsumo) }}" class="btn btn-editar">Editar</a>
+                {% if i.activo %}
+                <form action="{{ url_for('insumos.eliminar', id_insumo=i.idinsumo) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('¿Desactivar este insumo?');">Desactivar</button>
+                </form>
+                {% else %}
+                <form action="{{ url_for('insumos.activar', id_insumo=i.idinsumo) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-primary" onclick="return confirm('¿Activar este insumo?');">Activar</button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

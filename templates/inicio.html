@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block titulo %}ILV - Inicio{% endblock %}
+{% block contenido %}
+
+<section class="hero">
+    <div class="hero-texto">
+        <span class="hero-eyebrow">Sistema de Gestión Empresarial</span>
+        <h1>Industria de Licores del Valle</h1>
+        <p>
+            Administra el ciclo completo del negocio: desde la compra de insumos
+            y la producción, hasta el inventario, las ventas y la facturación,
+            todo desde un mismo lugar.
+        </p>
+    </div>
+</section>
+
+<h2 class="seccion-titulo">Datos maestros</h2>
+<div class="modulos-grid">
+    <a class="modulo-card" href="{{ url_for('clientes.listar') }}">
+        <span class="modulo-icono">CL</span>
+        <h3>Clientes</h3>
+        <p>Registra y consulta la información de tus clientes.</p>
+    </a>
+    <a class="modulo-card" href="{{ url_for('proveedores.listar') }}">
+        <span class="modulo-icono">PR</span>
+        <h3>Proveedores</h3>
+        <p>Gestiona los proveedores de insumos.</p>
+    </a>
+    <a class="modulo-card" href="{{ url_for('categorias.listar') }}">
+        <span class="modulo-icono">CA</span>
+        <h3>Categorías</h3>
+        <p>Organiza tus productos por categoría.</p>
+    </a>
+    <a class="modulo-card" href="{{ url_for('productos.listar') }}">
+        <span class="modulo-icono">PD</span>
+        <h3>Productos</h3>
+        <p>Catálogo de licores y productos terminados.</p>
+    </a>
+    <a class="modulo-card" href="{{ url_for('insumos.listar') }}">
+        <span class="modulo-icono">IN</span>
+        <h3>Insumos</h3>
+        <p>Materias primas y materiales de producción.</p>
+    </a>
+</div>
+
+<h2 class="seccion-titulo">Operaciones</h2>
+<div class="modulos-grid">
+    <a class="modulo-card" href="{{ url_for('compras.listar') }}">
+        <span class="modulo-icono">CO</span>
+        <h3>Compras</h3>
+        <p>Órdenes de compra de insumos a proveedores.</p>
+    </a>
+    <a class="modulo-card" href="{{ url_for('produccion.listar') }}">
+        <span class="modulo-icono">PC</span>
+        <h3>Producción</h3>
+        <p>Registra lotes y el consumo de insumos.</p>
+    </a>
+    <a class="modulo-card" href="{{ url_for('inventario.listar') }}">
+        <span class="modulo-icono">IV</span>
+        <h3>Inventario</h3>
+        <p>Stock de insumos y días de cobertura.</p>
+    </a>
+    <a class="modulo-card" href="{{ url_for('inventario_producto.listar') }}">
+        <span class="modulo-icono">IP</span>
+        <h3>Inv. Productos</h3>
+        <p>Existencias de productos terminados.</p>
+    </a>
+</div>
+
+<h2 class="seccion-titulo">Documentos</h2>
+<div class="modulos-grid">
+    <a class="modulo-card" href="{{ url_for('ventas.listar') }}">
+        <span class="modulo-icono">VE</span>
+        <h3>Ventas</h3>
+        <p>Registra las ventas a clientes.</p>
+    </a>
+    <a class="modulo-card" href="{{ url_for('facturas.listar') }}">
+        <span class="modulo-icono">FA</span>
+        <h3>Facturas</h3>
+        <p>Genera y consulta las facturas emitidas.</p>
+    </a>
+</div>
+
+{% endblock %}
