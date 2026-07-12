@@ -83,3 +83,17 @@ ALTER TABLE LoteProduccion
 ALTER TABLE LoteProduccion
     ADD CONSTRAINT chk_estado_lote
         CHECK (estado IN ('EN_PROCESO', 'FINALIZADO', 'RECHAZADO'));
+
+-- Actualización de los precios de los productos
+UPDATE Producto SET precioBase = 48000.00 WHERE idProducto = 'PRO001';
+UPDATE Producto SET precioBase = 50000.00 WHERE idProducto = 'PRO002';
+UPDATE Producto SET precioBase = 27000.00 WHERE idProducto = 'PRO003';
+UPDATE Producto SET precioBase = 58000.00 WHERE idProducto = 'PRO004';
+UPDATE Producto SET precioBase = 82000.00 WHERE idProducto = 'PRO005';
+UPDATE Producto SET precioBase = 52000.00 WHERE idProducto = 'PRO006';
+UPDATE Producto SET precioBase = 68000.00 WHERE idProducto = 'PRO007';
+UPDATE Producto SET precioBase = 72000.00 WHERE idProducto = 'PRO008';
+UPDATE Producto SET precioBase = 230000.00 WHERE idProducto = 'PRO009';
+UPDATE Producto SET precioBase = 105000.00 WHERE idProducto = 'PRO0010';
+UPDATE Producto SET precioBase = 45000.00 WHERE idProducto = 'PRO0011';
+UPDATE Producto SET precioBase = 47000.00 WHERE idProducto = 'PRO0012';
