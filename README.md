@@ -1,126 +1,155 @@
-# SGE - Industria de Licores del Valle (Univalle)
+> **Nota:** la aplicación web del proyecto **no se encuentra en la rama `main`**, sino en la rama **`app-web`**. Las instrucciones de instalación más abajo indican cómo cambiar a esa rama.
 
-Sistema de Gestión Empresarial (SGE) para una industria de licores, desarrollado como proyecto académico de la Universidad del Valle. El proyecto tiene dos partes:
+# Proyecto Final: Sistema de Gestión Empresarial (SGE) — Industria de Licores del Valle
 
-- **Modelo de base de datos** (rama `main`): esquema relacional en PostgreSQL con datos de prueba y consultas de negocio.
-- **Aplicación web** (rama `app-web`): app en Flask + PostgreSQL que consume ese modelo con CRUD completo por módulo.
+**Asignatura:** 750006C Bases de Datos
 
-> Este repositorio usa varias ramas en paralelo (ver [Ramas del repositorio](#ramas-del-repositorio)). La rama `main` solo contiene el modelo de datos; para ejecutar la aplicación web hay que cambiar a la rama `app-web`.
+**Institución:** Universidad del Valle - Escuela de Ingeniería de Sistemas y Computación
 
-## Ramas del repositorio
+**Docente:** Susana Medina Gordillo
 
-| Rama | Contenido |
-|---|---|
-| `main` | Modelo de datos (DDL, datos de prueba, consultas SQL) y diagrama ER |
-| `app-web` | Aplicación web completa (Flask) que usa el modelo de datos |
-| `feature/EstructuraOrg` | Desarrollo en curso de estructura organizacional (cargos/empleados) |
-| `feature/Productos` | Desarrollo en curso del módulo de productos |
-| `feature/distribuidor` | Desarrollo en curso del módulo de distribuidores |
-| `feature/proveedor` | Desarrollo en curso del módulo de proveedores |
+**Semestre:** 2026-1
 
-## Modelo de datos (rama `main`)
+**Repositorio:** [github.com/William629748/SGE-IndustriadeLicoresdelValle-Univalle](https://github.com/William629748/SGE-IndustriadeLicoresdelValle-Univalle)
 
-Esquema PostgreSQL con **23 tablas** que cubren datos maestros, compras, producción, inventarios, ventas, facturación, envíos y contratos.
+## 🏢 Información de la Empresa Seleccionada
 
-```
-db/
-├── 01_DDL_tablas.sql                        # Definición de las 23 tablas
-├── Bloque1_Datos_Maestros_ILV.sql           # Carga de datos maestros
-├── Bloque2_Compras_De_Insumos_ILV.sql       # Compras de insumos (datos generados)
-├── Bloque3_Produccion_Ventas_Documentos_ILV.sql  # Producción, ventas, facturas, envíos, contratos
-└── Consultas_ILV.sql                        # 10 consultas de negocio de ejemplo
-docs/
-└── Diagrama de BD.png                       # Diagrama entidad-relación
-```
+- **Nombre de la Empresa:** Industria de Licores del Valle (ILV)
+- **Sector Económico:** Manufactura — producción y comercialización de licores
+- **Descripción breve:** Empresa colombiana dedicada a la producción de licores. El sistema gestiona insumos y proveedores, producción por lotes, control de inventario de insumos y de producto terminado, ventas, facturación, distribuidores y puntos de venta.
 
-Dominios del modelo: `Pais/Departamento/Ciudad`, `Cargo/Empleado`, `CategoriaProducto/Producto/Insumo`, `Proveedor/ClienteEmpresa/Distribuidor/PuntoDeVenta`, `CompraInsumo/DetalleCompraInsumo/InventarioInsumo/InventarioProducto`, `LoteProduccion/ConsumoInsumo`, `Venta/DetalleVenta/Factura/Envio` y `Contrato`.
+## 👥 Integrantes del Grupo
 
-## Aplicación web (rama `app-web`)
+1. William May - [Código]
+2. Andrés Muñoz Moreno - [Código]
+3. Juan Fernando Marmolejo - [Código]
+4. Samuel Saldaña Giraldo - [Código]
 
-App en **Flask** organizada por *blueprints*, uno por módulo de negocio, con vistas Jinja2 y conexión directa a PostgreSQL vía `psycopg2`.
+## 🛠️ Stack Tecnológico
+
+- **Lenguaje:** Python 3.11+
+- **Framework Web:** Flask 3.1 (arquitectura basada en Blueprints)
+- **Base de Datos:** PostgreSQL
+- **ORM / Conector:** psycopg2-binary (conexión directa vía SQL, sin ORM)
+- **Motor de plantillas:** Jinja2
+- **Otras librerías:** python-dotenv (variables de entorno), Werkzeug
+
+## 🌿 Arquitectura del Repositorio y Ramas
+
+El repositorio distribuye el trabajo en varias ramas. La rama `main` solo contiene el diseño de base de datos (carpeta `db/`) y el diagrama ER (carpeta `docs/`). La aplicación web completa vive en la rama `app-web`.
+
+- **main:** scripts SQL de diseño (DDL, vistas/triggers, datos de prueba) y el diagrama entidad-relación.
+- **app-web:** aplicación Flask completa (backend, plantillas HTML, estáticos) + los mismos scripts de base de datos, lista para ejecutarse.
+- **feature/EstructuraOrg, feature/Productos, feature/distribuidor, feature/proveedor:** ramas de desarrollo por módulo, ya integradas a `app-web` mediante pull requests.
+
+Estructura principal de la rama `app-web`:
 
 ```
 app-web/
-├── app.py                    # Punto de entrada; registra todos los blueprints
-├── db.py                     # Conexión a PostgreSQL y traducción de errores a mensajes amigables
-├── requirements.txt          # Flask, psycopg2-binary, python-dotenv, etc.
-├── .env.example              # Variables de entorno de ejemplo
+├── app.py                     # Punto de entrada Flask, registro de blueprints
+├── db.py                      # Conexión a PostgreSQL (psycopg2)
+├── requirements.txt
+├── .env.example
 ├── blueprints/                # Un módulo por entidad de negocio
-│   ├── categorias.py          # /categorias
-│   ├── clientes.py            # /clientes
-│   ├── compras.py             # /compras (incluye recepción y recálculo de totales)
-│   ├── facturas.py            # /facturas
-│   ├── insumos.py             # /insumos
-│   ├── inventario.py          # /inventario (insumos, con cálculo de estado de stock)
-│   ├── inventario_producto.py # /inventario-producto
-│   ├── produccion.py          # /produccion (lotes, consumo de insumos, cierre de lote)
-│   ├── productos.py           # /productos
-│   ├── proveedores.py         # /proveedores
-│   └── ventas.py              # /ventas (incluye generación de factura y envío)
-├── templates/                 # Vistas Jinja2 (listar/formulario/detalle por módulo)
-└── static/css/                # Estilos base
+│   ├── clientes.py
+│   ├── proveedores.py
+│   ├── insumos.py
+│   ├── inventario.py
+│   ├── categorias.py
+│   ├── productos.py
+│   ├── inventario_producto.py
+│   ├── produccion.py
+│   ├── compras.py
+│   ├── ventas.py
+│   └── facturas.py
+├── templates/                 # Vistas Jinja2 (una carpeta por módulo)
+├── static/css/
+├── db/                        # Scripts SQL (DDL, retos, datos de prueba)
+└── docs/                      # Diagrama entidad-relación
 ```
 
-Cada módulo expone operaciones CRUD (listar, crear, editar, activar/eliminar según el caso) sobre su entidad correspondiente, con generación automática de IDs consecutivos y recálculo de totales en compras y ventas.
+## 📐 Diseño de la Base de Datos
 
-Además del esquema base, la rama `app-web` agrega scripts adicionales en `db/`:
+A continuación se describe la estructura relacional que soporta la aplicación.
 
-| Script | Propósito |
-|---|---|
-| `02_ALTER_ajustes_pdf.sql` | Agrega campos de habeas data, representante legal y régimen tributario a `ClienteEmpresa` y `Proveedor`, y datos bancarios/logísticos a `Proveedor` |
-| `03_Reto_Trigger_InventarioCompras.sql` | Trigger PL/pgSQL: al pasar una compra a estado `Recibida`, actualiza automáticamente el inventario de insumos |
-| `04_Reto_Indices.sql` | Índices sobre las columnas FK más consultadas (ventas, detalle de venta, compras, etc.) |
-| `05_Reto_Vistas.sql` | Vistas de negocio, incluyendo estado de stock de insumos con días de cobertura calculados |
+### Diagrama Entidad-Relación (DER)
 
-### Cómo ejecutar la aplicación web
+El diagrama se encuentra en `docs/Diagrama de BD.png` dentro del repositorio (disponible tanto en `main` como en `app-web`).
 
-Requiere Python 3.11+, PostgreSQL 15+ y Git. (Ver también `EJECUTAR_EN_WINDOWS.md` en la rama `app-web` para el paso a paso detallado en Windows.)
+### Diccionario de Datos Resumido
+
+- **Ubicación geográfica:** Pais, Departamento, Ciudad.
+- **Estructura organizacional:** Cargo, Empleado.
+- **Terceros:** Proveedor, ClienteEmpresa, Distribuidor.
+- **Productos e insumos:** CategoriaProducto, Producto, Insumo, InventarioInsumo, inventarioProducto.
+- **Compras:** CompraInsumo, DetalleCompraInsumo.
+- **Producción:** LoteProduccion, ConsumoInsumo.
+- **Ventas y facturación:** PuntoDeVenta, Venta, DetalleVenta, Factura.
+- **Distribución:** Envio, Contrato.
+
+## 🚀 Guía de Instalación y Ejecución
+
+Estos pasos ejecutan la aplicación web, que está en la rama `app-web`, no en `main`.
+
+### 1. Clonar el repositorio y cambiar a la rama app-web
 
 ```bash
-# 1. Clonar y cambiar a la rama de la app
 git clone https://github.com/William629748/SGE-IndustriadeLicoresdelValle-Univalle.git
 cd SGE-IndustriadeLicoresdelValle-Univalle
 git checkout app-web
-
-# 2. Entorno virtual y dependencias
-python -m venv venv
-source venv/bin/activate        # En Windows: venv\Scripts\activate
-pip install -r requirements.txt
-
-# 3. Crear base de datos en PostgreSQL
-psql -U postgres -c "CREATE USER andres_ilv WITH PASSWORD 'ilv2026';"
-psql -U postgres -c "CREATE DATABASE ilv_db OWNER andres_ilv;"
-
-# 4. Cargar esquema, datos y extensiones, en este orden
-psql -U andres_ilv -d ilv_db -f db/01_DDL_tablas.sql
-psql -U andres_ilv -d ilv_db -f db/02_ALTER_ajustes_pdf.sql
-psql -U andres_ilv -d ilv_db -f db/Bloque1_Datos_Maestros_ILV.sql
-psql -U andres_ilv -d ilv_db -f db/Bloque2_Compras_De_Insumos_ILV.sql
-psql -U andres_ilv -d ilv_db -f db/Bloque3_Produccion_Ventas_Documentos_ILV.sql
-psql -U andres_ilv -d ilv_db -f db/03_Reto_Trigger_InventarioCompras.sql
-psql -U andres_ilv -d ilv_db -f db/04_Reto_Indices.sql
-psql -U andres_ilv -d ilv_db -f db/05_Reto_Vistas.sql
-
-# 5. Configurar variables de entorno
-cp .env.example .env
-# Edita .env con host/usuario/contraseña de tu base
-
-# 6. Ejecutar
-python app.py
-# Abre http://127.0.0.1:5000
 ```
 
-## Tecnologías
+### 2. Configurar entorno virtual
 
-- **Backend**: Python 3.11+, Flask 3.1, psycopg2-binary
-- **Base de datos**: PostgreSQL (triggers, vistas, índices, columnas generadas)
-- **Frontend**: Jinja2 + CSS
+```bash
+python -m venv venv
+source venv/bin/activate   # En Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
 
-## Autores
+### 3. Configurar la Base de Datos
 
-Proyecto académico — Universidad del Valle (Univalle).
+1. Crear una base de datos en PostgreSQL (por ejemplo `ilv_db`).
+2. Ejecutar los scripts de la carpeta `db/` en este orden:
 
-- Andrés Muñoz Moreno (2438908)
-- William Rooselbelt May Barreto (2435731)
-- Samuel Saldaña Girando (2437631)
+```bash
+psql -U <usuario> -d ilv_db -f db/01_DDL_tablas.sql
+psql -U <usuario> -d ilv_db -f db/02_ALTER_ajustes_pdf.sql
+psql -U <usuario> -d ilv_db -f db/Bloque1_Datos_Maestros_ILV.sql
+psql -U <usuario> -d ilv_db -f db/Bloque2_Compras_De_Insumos_ILV.sql
+psql -U <usuario> -d ilv_db -f db/Bloque3_Produccion_Ventas_Documentos_ILV.sql
+psql -U <usuario> -d ilv_db -f db/03_Reto_Trigger_InventarioCompras.sql
+psql -U <usuario> -d ilv_db -f db/04_Reto_Indices.sql
+psql -U <usuario> -d ilv_db -f db/05_Reto_Vistas.sql
+```
+
+### 4. Configurar variables de entorno
+
+Copiar `.env.example` a `.env` y completar con los datos de tu base local:
+
+```
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=ilv_db
+DB_USER=tu_usuario
+DB_PASSWORD=tu_password
+SECRET_KEY=una-clave-secreta-cualquiera
+```
+
+### 5. Ejecutar la aplicación
+
+```bash
+python app.py
+```
+
+La aplicación quedará disponible en `http://127.0.0.1:5000`.
+
+> Nota: para usuarios de Windows, la rama `app-web` incluye además la guía `EJECUTAR_EN_WINDOWS.md` con el mismo procedimiento paso a paso.
+
+## 📄 Notas de Entrega y Funcionalidades
+
+- **Módulos de negocio:** clientes, proveedores, insumos, inventario de insumos, categorías, productos, inventario de producto, producción, compras, ventas y facturas, cada uno como un Blueprint independiente de Flask.
+- **Retos de base de datos:** la carpeta `db/` incluye un trigger sobre inventario/compras (03), índices (04) y vistas (05), aplicados sobre el modelo base.
+- **Consultas:** el archivo `db/Consultas_ILV.sql` agrupa las consultas de análisis solicitadas para la entrega (clientes, ventas, distribución, etc.).
+- **Conexión a datos:** la app usa psycopg2 directamente (sin ORM), con la cadena de conexión configurada por variables de entorno en `db.py`.
 - Juan Fernando Marmolejo (2437661)
